@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block master_content %}
+<!-- Load Font Awesome for the interactive eye toggle -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* Vibrant Glow Animations */
+    @keyframes glowPulse {
+        0% { text-shadow: 0 0 8px rgba(0, 242, 254, 0.6); }
+        50% { text-shadow: 0 0 18px rgba(0, 242, 254, 0.9), 0 0 28px rgba(255, 0, 127, 0.5); }
+        100% { text-shadow: 0 0 8px rgba(0, 242, 254, 0.6); }
+    }
+
+    .glowing-title {
+        font-size: 2.5rem;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        color: #00f2fe;
+        animation: glowPulse 4s infinite ease-in-out;
+    }
+
+    /* Interactive Input Fields */
+    .input-group {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    .cyber-label {
+        color: #94a3b8; 
+        font-size: 0.8rem; 
+        text-transform: uppercase; 
+        letter-spacing: 1.5px;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 0.6rem;
+        transition: color 0.3s ease;
+    }
+    
+    /* Multicolored glowing inputs with human-readable, high-contrast text styles */
+    .cyber-input {
+        width: 100%; 
+        padding: 1rem 1.2rem; 
+        background: #090911; 
+        border: 1px solid rgba(148, 163, 184, 0.25); 
+        color: #ffffff; 
+        font-size: 1rem;
+        border-radius: 6px;
+        font-family: system-ui, -apple-system, sans-serif;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Multicolored Glow Focus Effects */
+    .glow-cyan:focus {
+        outline: none;
+        border-color: #00f2fe;
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
+        background: #0c0c1a;
+    }
+    .glow-cyan:focus + .cyber-label-target {
+        color: #00f2fe;
+        text-shadow: 0 0 8px rgba(0, 242, 254, 0.5);
+    }
+
+    .glow-pink:focus {
+        outline: none;
+        border-color: #ff007f;
+        box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+        background: #0c0c1a;
+    }
+    .glow-pink:focus + .cyber-label-target {
+        color: #ff007f;
+        text-shadow: 0 0 8px rgba(255, 0, 127, 0.5);
+    }
+
+    /* Password Container and Eye Toggle Icon */
+    .password-container {
+        position: relative;
+    }
+    .password-toggle-icon {
+        position: absolute;
+        right: 1.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+    .password-toggle-icon:hover {
+        color: #ff007f;
+        text-shadow: 0 0 10px rgba(255, 0, 127, 0.8);
+    }
+
+    /* Form Action Control Buttons */
+    .btn-submit {
+        width: 100%;
+        padding: 1rem;
+        font-family: monospace;
+        font-weight: bold;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        border: none;
+        border-radius: 6px;
+        color: #fff;
+        background: linear-gradient(90deg, #00f2fe, #ff007f);
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+        cursor: pointer;
+        transition: all 0.4s ease;
+    }
+    .btn-submit:hover {
+        box-shadow: 0 0 25px rgba(255, 0, 127, 0.7), 0 0 10px rgba(0, 242, 254, 0.5);
+        transform: translateY(-1px);
+        filter: brightness(1.15);
+    }
+</style>
+
+
+<div class="wrapper" style="max-width: 500px; margin: 4rem auto; padding: 2rem 1.5rem;">
+    <!-- Animated Glowing Header -->
+    <h2 class="glowing-title" style="text-align: center; font-family: monospace;">
+        Session <span style="color:#ff007f; text-shadow: 0 0 15px rgba(255, 0, 127, 0.6);">Authentication</span>
+    </h2>
+    <p style="color:#64748b; text-align:center; margin-bottom: 3rem; font-size: 0.9rem; letter-spacing: 0.5px; font-family: monospace;">
+        Provide your registered security credentials to initialize session control.
+    </p>
+
+    <!-- Error/Warning Messages display panel with smooth auto-fade transition -->
+    {% if messages %}
+        <div id="message-container" style="transition: opacity 0.6s ease-in-out;">
+            {% for message in messages %}
+                <div style="padding: 1.2rem; background: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; color: #fff; border-radius: 6px; margin-bottom: 2rem; font-family: monospace; font-size: 0.85rem; box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);">
+                    <span style="color: #00f2fe; font-weight: bold;">[ SYSTEM STATUS ]</span> {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="neon-card" style="background: rgba(4, 4, 8, 0.9); border: 1px solid rgba(0, 242, 254, 0.25); padding: 3rem 2.5rem; border-radius: 8px; box-shadow: 0 0 40px rgba(0, 242, 254, 0.05);">
+        <form method="POST">
+            {% csrf_token %}
+            
+            <!-- Email or Username Dual Input Field -->
+            <div class="input-group">
+                <label class="cyber-label cyber-label-target" id="label_login">Username or Email Node</label>
+                <input type="text" 
+                       name="username" 
+                       id="id_username" 
+                       class="cyber-input glow-cyan" 
+                       required 
+                       placeholder="Enter username or email address"
+                       style="margin-top: 0.4rem;">
+            </div>
+
+            <!-- Glowing Password Input with Eye Toggle Icon -->
+            <div class="input-group" style="margin-bottom: 2.5rem;">
+                <label class="cyber-label cyber-label-target" id="label_password">Security Keyphrase</label>
+                <div class="password-container" style="margin-top: 0.4rem;">
+                    <input type="password" 
+                           name="password" 
+                           id="id_password" 
+                           class="cyber-input glow-pink" 
+                           required 
+                           placeholder="••••••••">
+                    <i class="fa-solid fa-eye password-toggle-icon" id="eyeToggle" onclick="togglePasswordVisibility()"></i>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit">
+                Initialize Connection &rarr;
+            </button>
+        </form>
+    </div>
+
+    <!-- Redirect Option -->
+    <p style="text-align: center; margin-top: 2.5rem; color: #64748b; font-size: 0.9rem; font-family: monospace;">
+        No active profile credentials? <a href="{% url 'registry' %}" style="color: #ff007f; text-decoration: none; font-weight: bold; transition: text-shadow 0.3s;" onmouseover="this.style.textShadow='0 0 8px #ff007f'" onmouseout="this.style.textShadow='none'">Register New Node &rarr;</a>
+    </p>
+</div>
+
+<!-- Password Visibility & Message Auto-Fade Engines -->
+<script>
+    // 1. Password Visibility Toggle Function
+    function togglePasswordVisibility() {
+        const passwordField = document.getElementById("id_password");
+        const eyeIcon = document.getElementById("eyeToggle");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            eyeIcon.classList.remove("fa-eye");
+            eyeIcon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            eyeIcon.classList.add("fa-eye");
+            eyeIcon.classList.remove("fa-eye-slash");
+        }
+    }
+
+    // 2. Clear status alerts smoothly after 4 seconds
+    window.addEventListener('DOMContentLoaded', () => {
+        const msgContainer = document.getElementById('message-container');
+        if (msgContainer) {
+            setTimeout(() => {
+                msgContainer.style.opacity = '0'; // Initiates CSS fade out
+                setTimeout(() => {
+                    msgContainer.remove(); // Safely detaches container from DOM
+                }, 600); // Matches the 0.6s transition
+            }, 4000); // Displays notice for 4 seconds
+        }
+    });
+</script>
+{% endblock %}

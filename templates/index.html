@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block master_content %}
+<div class="wrapper">
+    <!-- Hero Section -->
+    <div class="terminal-hero">
+        <div class="hero-header">
+            <p
+                style="color: #ff007f; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.5rem;">
+                [ Environment: Production_Node ]</p>
+            <h1>Full-Stack<br><span>Software Developer</span></h1>
+            <p style="color: #94a3b8; font-size: 1.2rem; margin: 1.5rem 0; max-width: 650px; line-height: 1.7;">
+                Welcome to my central deployment hub. This is my definitive engineering portfolio showcasing
+                high-performance enterprise applications, secure relational database architectures, automated pipeline
+                orchestrations, and robust system endpoints.
+            </p>
+
+            <div class="dynamic-border-glow"
+                style="margin-bottom: 2.5rem; padding-left: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Fully Functional & Clickable SMS Action Protocol -->
+                <div>
+                    <a href="sms:+254791209899"
+                        onclick="navigator.clipboard.writeText('+254791209899'); const span = this.querySelector('.sms-btn-text'); const orig = span.textContent; span.textContent = '✓ Number Copied!'; setTimeout(() => span.textContent = orig, 2500);"
+                        style="color: #00f2fe; text-decoration: none; display: inline-flex; align-items: center; padding: 0.6rem 1.2rem; background: rgba(0, 242, 254, 0.08); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 6px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(0, 242, 254, 0.1);"
+                        onmouseover="this.style.background='rgba(0, 242, 254, 0.2)'; this.style.borderColor='#00f2fe'; this.style.boxShadow='0 0 15px rgba(0, 242, 254, 0.4)';"
+                        onmouseout="this.style.background='rgba(0, 242, 254, 0.08)'; this.style.borderColor='rgba(0, 242, 254, 0.3)'; this.style.boxShadow='0 0 10px rgba(0, 242, 254, 0.1)';">
+                        📡 SMS Gateway:&nbsp;<span class="sms-btn-text"
+                            style="color:#ffffff; text-decoration: underline; margin-left: 0.3rem;">+254 791209899 (Send
+                            Message)</span>
+                    </a>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <span style="color: #9d4edd; font-weight: bold; display: inline-flex; align-items: center;">💻 Code
+                        Repositories:</span>
+                    <a href="/login.html" target="_blank"
+                        style="color: #9d4edd; text-decoration: none; display: inline-flex; align-items: center; padding: 0.5rem 1rem; background: rgba(157, 78, 221, 0.08); border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 6px; font-weight: bold; transition: all 0.3s ease;"
+                        onmouseover="this.style.background='rgba(157, 78, 221, 0.2)'; this.style.borderColor='#9d4edd'; this.style.boxShadow='0 0 15px rgba(157, 78, 221, 0.4)';"
+                        onmouseout="this.style.background='rgba(157, 78, 221, 0.08)'; this.style.borderColor='rgba(157, 78, 221, 0.3)'; this.style.boxShadow='none';">
+                        GitHub Workspace
+                    </a>
+                    <a href="https://linkedin.com" target="_blank"
+                        style="color: #00f2fe; text-decoration: none; display: inline-flex; align-items: center; padding: 0.5rem 1rem; background: rgba(0, 242, 254, 0.08); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 6px; font-weight: bold; transition: all 0.3s ease;"
+                        onmouseover="this.style.background='rgba(0, 242, 254, 0.2)'; this.style.borderColor='#00f2fe'; this.style.boxShadow='0 0 15px rgba(0, 242, 254, 0.4)';"
+                        onmouseout="this.style.background='rgba(0, 242, 254, 0.08)'; this.style.borderColor='rgba(0, 242, 254, 0.3)'; this.style.boxShadow='none';">
+                        Professional Network
+                    </a>
+                </div>
+            </div>
+
+            <div class="metrics-row">
+                <div class="metric-node">
+                    <h4>{{ project_count }}</h4>
+                    <p style="color:#64748b;">Deployments</p>
+                </div>
+                <div class="metric-node">
+                    <h4>{{ service_count }}</h4>
+                    <p style="color:#64748b;">Core Modules</p>
+                </div>
+                <div class="metric-node">
+                    <h4>{{ ticket_count }}</h4>
+                    <p style="color:#64748b;">Cleared Leads</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="identity-vault">
+            <img src="{% static 'images/profile.jpg' %}" alt="Software Developer Profile"
+                style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+    </div>
+
+    <!-- Technical Work Experience & Certified Training Section -->
+    <div class="experience-section"
+        style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+            <h2 style="color: #00f2fe; font-size: 1.8rem; margin: 0; text-transform: uppercase; letter-spacing: 1px;">
+                ⚡ [ Work Experience & Certifications ]
+            </h2>
+            <span style="color: #ff007f; font-family: monospace; font-size: 0.9rem;">// Professional History</span>
+        </div>
+
+        <div class="timeline-container" style="display: flex; flex-direction: column; gap: 1.8rem;">
+
+            <!-- ICT Authority Experience Card -->
+            <div class="experience-card"
+                style="background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-left: 4px solid #00f2fe; padding: 1.8rem; border-radius: 8px; backdrop-filter: blur(10px);">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="color: #ffffff; margin: 0; font-size: 1.3rem;">Software Developer / ICT Industrial
+                            Attaché</h3>
+                        <p style="color: #00f2fe; margin: 0.3rem 0 0 0; font-weight: 600;">Information and Communication
+                            Technology Authority (ICTA)</p>
+                    </div>
+                    <span
+                        style="background: rgba(0, 242, 254, 0.1); color: #00f2fe; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; border: 1px solid rgba(0, 242, 254, 0.3); font-family: monospace;">
+                        May 2026 – Aug 2026
+                    </span>
+                </div>
+
+                <p style="color: #94a3b8; line-height: 1.6; margin-bottom: 1.2rem;">
+                    Engineered enterprise administrative software platforms and digitized public-sector workflows while
+                    completing specialized professional training certifications in AI and Data Analytics.
+                </p>
+
+                <ul style="color: #cbd5e1; line-height: 1.7; padding-left: 1.2rem; margin: 0 0 1.2rem 0;">
+                    <li><strong>ICT Attachees Management System (AMS):</strong> Architected and deployed an end-to-end
+                        web platform featuring Role-Based Access Control (RBAC), digital daily logbook submissions, and
+                        automated HR approval workflows.</li>
+                    <li><strong>Asset & Administrative Tracking:</strong> Built specialized core modules for digital
+                        inventory tracking, record management, and structured supervisor evaluation rubrics.</li>
+                    <li><strong>Certified AI Training (ICTA & Pathways Technologies):</strong> Earned official
+                        certification in practical machine learning, artificial intelligence deployment, and ethical
+                        implementation models (Cert ID: ICTA-1783370310-7426-44747).</li>
+                    <li><strong>Certified Data Analytics Training (ICTA & Sigma Digital):</strong> Earned official
+                        certification in data visualization, statistical analysis, and data-driven public sector systems
+                        (Cert ID: ICTA-1784794808-7855-44747).</li>
+                </ul>
+
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                    <span
+                        style="background: #1e293b; color: #9d4edd; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">Python
+                        / Django</span>
+                    <span
+                        style="background: #1e293b; color: #00f2fe; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; border: 1px solid rgba(0, 242, 254, 0.3);">Certified
+                        AI Specialist</span>
+                    <span
+                        style="background: #1e293b; color: #00f2fe; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; border: 1px solid rgba(0, 242, 254, 0.3);">Certified
+                        Data Analyst</span>
+                    <span
+                        style="background: #1e293b; color: #9d4edd; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">PostgreSQL
+                        / MariaDB</span>
+                </div>
+            </div>
+
+            <!-- Full-Stack Development & Academic Projects Card -->
+            <div class="experience-card"
+                style="background: rgba(15, 23, 42, 0.6); border: 1px solid #1e293b; border-left: 4px solid #ff007f; padding: 1.8rem; border-radius: 8px; backdrop-filter: blur(10px);">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="color: #ffffff; margin: 0; font-size: 1.3rem;">Full-Stack Application Developer</h3>
+                        <p style="color: #ff007f; margin: 0.3rem 0 0 0; font-weight: 600;">Independent Engineering &
+                            Academic Projects</p>
+                    </div>
+                    <span
+                        style="background: rgba(255, 0, 127, 0.1); color: #ff007f; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; border: 1px solid rgba(255, 0, 127, 0.3); font-family: monospace;">
+                        2025 – Present
+                    </span>
+                </div>
+
+                <ul style="color: #cbd5e1; line-height: 1.7; padding-left: 1.2rem; margin: 0 0 1.2rem 0;">
+                    <li><strong>Gender-Based Violence (GBV) Reporting System:</strong> Designed and implemented a secure
+                        web application for confidential incident reporting, complete with anonymous form submissions
+                        and data encryption.</li>
+                    <li><strong>SIST Digital Attachment Logbook:</strong> Built a specialized logbook management
+                        platform using Java Spring Boot to streamline weekly supervisor sign-offs and student tracking
+                        for Kisii University.</li>
+                    <li><strong>ICT Attachee Management System:</strong> Developed an administrative management platform
+                        using Python and Django to centralize attachee tracking, daily logbook records, and asset
+                        management.</li>
+                </ul>
+
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                    <span
+                        style="background: #1e293b; color: #ff007f; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">Python
+                        / Django</span>
+                    <span
+                        style="background: #1e293b; color: #ff007f; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">Java
+                        / Spring Boot</span>
+                    <span
+                        style="background: #1e293b; color: #ff007f; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">Tailwind
+                        CSS</span>
+                    <span
+                        style="background: #1e293b; color: #ff007f; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem;">Git
+                        / GitHub</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

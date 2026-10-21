@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block master_content %}
+<div class="wrapper">
+    <h2 style="font-size: 2.5rem; text-transform: uppercase; margin-bottom: 3rem; text-align: center;">Operational <span style="color:#00f2fe;">Capabilities</span></h2>
+    <div class="layout-grid">
+        {% for service in services %}
+        <div class="neon-card" style="border-left: 5px solid {{ service.glowing_accent_color }};">
+            <h3 style="color: #fff; margin-bottom: 1rem; text-transform: uppercase;">{{ service.system_name }}</h3>
+            <p style="color: #94a3b8; line-height: 1.7;">{{ service.operational_capability }}</p>
+        </div>
+        {% empty %}
+        <div class="neon-card" style="grid-column: 1/-1; border-left: 4px solid #ff007f;">
+            <h3 style="color:#ff007f;">No core modules loaded</h3>
+            <p style="color:#64748b; margin-top: 1rem;">Access the database gateway at <code>/admin</code> to dynamically inject structural capabilities.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

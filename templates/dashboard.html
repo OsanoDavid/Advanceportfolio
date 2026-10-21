@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="wrapper" style="max-width: 900px; margin: 4rem auto; padding: 2rem 1.5rem;">
+    <!-- Dashboard Header -->
+    <h2 class="glowing-title" style="text-align: center; font-family: monospace; font-size: 2rem; margin-bottom: 0.5rem;">
+        TERMINAL <span style="color:#00f2fe; text-shadow: 0 0 15px rgba(0, 242, 254, 0.6);">DASHBOARD</span>
+    </h2>
+    <p style="color:#64748b; text-align:center; margin-bottom: 3rem; font-size: 0.9rem; letter-spacing: 0.5px; font-family: monospace;">
+        Secure session active // Node verification complete // Welcome back, {{ ticket.full_identity }}.
+    </p>
+
+    <!-- Interactive Grid Layout -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; font-family: monospace;">
+        
+        <!-- COLUMN 1: System Identity Card -->
+        <div class="neon-card" style="background: rgba(4, 4, 8, 0.9); border: 1px solid rgba(0, 242, 254, 0.25); padding: 2rem; border-radius: 8px; box-shadow: 0 0 30px rgba(0, 242, 254, 0.05);">
+            <h3 style="color: #ff007f; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255, 0, 127, 0.2); padding-bottom: 0.5rem; font-size: 1.1rem; letter-spacing: 1px;">
+                [ SECURITY CREDENTIALS ]
+            </h3>
+            
+            <table style="width: 100%; color: #fff; border-collapse: collapse; font-size: 0.9rem;">
+                <tr style="border-bottom: 1px solid rgba(100, 116, 139, 0.15);">
+                    <td style="padding: 0.8rem 0; color: #64748b;">Node Identity:</td>
+                    <td style="padding: 0.8rem 0; text-align: right; font-weight: bold; color: #00f2fe;">{{ ticket.full_identity }}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(100, 116, 139, 0.15);">
+                    <td style="padding: 0.8rem 0; color: #64748b;">Secure Email:</td>
+                    <td style="padding: 0.8rem 0; text-align: right; color: #fff;">{{ ticket.secure_email }}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(100, 116, 139, 0.15);">
+                    <td style="padding: 0.8rem 0; color: #64748b;">Organization:</td>
+                    <td style="padding: 0.8rem 0; text-align: right; color: #fff;">{{ ticket.associated_organization }}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(100, 116, 139, 0.15);">
+                    <td style="padding: 0.8rem 0; color: #64748b;">Specialization:</td>
+                    <td style="padding: 0.8rem 0; text-align: right; color: #00f2fe;">{{ ticket.specialization }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 0.8rem 0; color: #64748b;">Auth Username:</td>
+                    <td style="padding: 0.8rem 0; text-align: right; color: #ff007f;">@{{ ticket.username }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- COLUMN 2: Developer Diagnostics & Controls -->
+        <div class="neon-card" style="background: rgba(4, 4, 8, 0.9); border: 1px solid rgba(255, 0, 127, 0.25); padding: 2rem; border-radius: 8px; box-shadow: 0 0 30px rgba(255, 0, 127, 0.05);">
+            <h3 style="color: #00f2fe; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(0, 242, 254, 0.2); padding-bottom: 0.5rem; font-size: 1.1rem; letter-spacing: 1px;">
+                [ TELEMETRY & SYSTEM CODES ]
+            </h3>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #64748b; margin-bottom: 0.4rem;">
+                    <span>Database Connection Integrity</span>
+                    <span style="color: #00f2fe;">99.8%</span>
+                </div>
+                <div style="height: 6px; background: rgba(0, 242, 254, 0.1); border-radius: 3px; overflow: hidden;">
+                    <div style="width: 99.8%; height: 100%; background: #00f2fe; box-shadow: 0 0 10px #00f2fe;"></div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #64748b; margin-bottom: 0.4rem;">
+                    <span>Security Clearance Level</span>
+                    <span style="color: #ff007f;">LEVEL_03</span>
+                </div>
+                <div style="height: 6px; background: rgba(255, 0, 127, 0.1); border-radius: 3px; overflow: hidden;">
+                    <div style="width: 75%; height: 100%; background: #ff007f; box-shadow: 0 0 10px #ff007f;"></div>
+                </div>
+            </div>
+
+            <!-- Vault Entrance Controls -->
+            <div style="text-align: center; margin-top: 1rem;">
+                <p style="color: #64748b; font-size: 0.8rem; margin-bottom: 1rem;">Authorize clearance and proceed directly to primary records.</p>
+                <a href="{% url 'vault' %}" class="btn-submit" style="display: block; text-decoration: none; text-align: center; padding: 0.8rem; background: #00f2fe; color: #040408; font-weight: bold; border-radius: 4px; box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 0 25px rgba(0, 242, 254, 0.6)'" onmouseout="this.style.transform='none'; this.style.boxShadow='0 0 15px rgba(0, 242, 254, 0.4)'">
+                    OPEN PRODUCTION VAULT &rarr;
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Actions Footer -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem; font-family: monospace; border-top: 1px solid rgba(100, 116, 139, 0.15); padding-top: 1.5rem;">
+        <span style="color: #64748b; font-size: 0.8rem;">SECURE TERMINAL // PORTFOLIO_ENGINE_V3</span>
+        <a href="{% url 'logout' %}" style="color: #ff007f; text-decoration: none; font-size: 0.9rem; font-weight: bold; transition: text-shadow 0.3s;" onmouseover="this.style.textShadow='0 0 8px #ff007f'" onmouseout="this.style.textShadow='none'">
+            Disconnect Session &times;
+        </a>
+    </div>
+</div>
+{% endblock %}

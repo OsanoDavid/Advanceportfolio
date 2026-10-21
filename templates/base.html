@@ -1,0 +1,363 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Software Developer Portfolio Matrix</title>
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/port_logo.svg' %}">
+    <link rel="stylesheet" href="{% static 'css/cyberpunk.css' %}">
+    <style>
+        /* Structural Layout & Sticky Footer Integration */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #020204;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+        /* Dynamic Left and Right Screen Edge Neon Glow Lines */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100vh;
+            z-index: 9999;
+            animation: dynamicLineGlowShift 75s linear infinite;
+            pointer-events: none;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100vh;
+            z-index: 9999;
+            animation: dynamicLineGlowShift 75s linear infinite;
+            pointer-events: none;
+        }
+
+        /* Dynamic left border glow class */
+        .dynamic-border-glow {
+            border-left: 3px solid #00f2fe;
+            animation: dynamicBorderGlowShift 75s linear infinite;
+        }
+
+        @keyframes dynamicBorderGlowShift {
+            0%, 20% { border-color: #00f2fe; filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.6)); }
+            25%, 40% { border-color: #ff007f; filter: drop-shadow(0 0 8px rgba(255, 0, 127, 0.6)); }
+            45%, 60% { border-color: #9d4edd; filter: drop-shadow(0 0 8px rgba(157, 78, 221, 0.6)); }
+            65%, 80% { border-color: #39ff14; filter: drop-shadow(0 0 8px rgba(57, 255, 20, 0.6)); }
+            85%, 95% { border-color: #ff0055; filter: drop-shadow(0 0 8px rgba(255, 0, 85, 0.6)); }
+            100% { border-color: #00f2fe; filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.6)); }
+        }
+
+        .wrapper {
+            flex: 1;
+        }
+
+        /* Expanded 5-Color Chroma Navigation Loop with 15-Second Hold Times */
+        @keyframes dynamicChromaShift {
+            0%, 20% { color: #00f2fe; text-shadow: 0 0 12px rgba(0, 242, 254, 0.6); }   /* Cyan */
+            25%, 40% { color: #ff007f; text-shadow: 0 0 12px rgba(255, 0, 127, 0.6); }  /* Cyber Pink */
+            45%, 60% { color: #9d4edd; text-shadow: 0 0 12px rgba(157, 78, 221, 0.6); }  /* Purple */
+            65%, 80% { color: #39ff14; text-shadow: 0 0 12px rgba(57, 255, 20, 0.6); }   /* Neon Green */
+            85%, 95% { color: #ff0055; text-shadow: 0 0 12px rgba(255, 0, 85, 0.6); }    /* Matrix Red */
+            100% { color: #00f2fe; text-shadow: 0 0 12px rgba(0, 242, 254, 0.6); }
+        }
+
+        /* Synchronized Glow Line Animation Matching the Links */
+        @keyframes dynamicLineGlowShift {
+            0%, 20% { background-color: #00f2fe; box-shadow: 0 0 12px #00f2fe, 0 0 20px rgba(0, 242, 254, 0.8); }
+            25%, 40% { background-color: #ff007f; box-shadow: 0 0 12px #ff007f, 0 0 20px rgba(255, 0, 127, 0.8); }
+            45%, 60% { background-color: #9d4edd; box-shadow: 0 0 12px #9d4edd, 0 0 20px rgba(157, 78, 221, 0.8); }
+            65%, 80% { background-color: #39ff14; box-shadow: 0 0 12px #39ff14, 0 0 20px rgba(57, 255, 20, 0.8); }
+            85%, 95% { background-color: #ff0055; box-shadow: 0 0 12px #ff0055, 0 0 20px rgba(255, 0, 85, 0.8); }
+            100% { background-color: #00f2fe; box-shadow: 0 0 12px #00f2fe, 0 0 20px rgba(0, 242, 254, 0.8); }
+        }
+        
+        /* Navbar Structural Rules */
+        navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background: rgba(2, 2, 4, 0.9);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .nav-grid {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-grid li {
+            position: relative;
+            padding-bottom: 0.6rem;
+        }
+
+        .nav-grid a {
+            animation: dynamicChromaShift 75s linear infinite; /* Long cycle length allows distinct hold intervals */
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            display: inline-block;
+        }
+        
+        .nav-grid a:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.4);
+        }
+
+        /* Continuous Glowing Tracking Line Below the active nav links */
+        .nav-grid a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            /* Cycles colors and glowing filter states natively with the link color engine loop */
+            animation: dynamicLineGlowShift 75s linear infinite;
+            transition: height 0.2s ease;
+        }
+
+        .nav-grid a:hover::after {
+            height: 4px; /* Makes the glowing laser track thicker when you hover over it */
+        }
+
+        /* Master System Footer Grid Architecture */
+        footer {
+            background: rgba(4, 4, 8, 0.98);
+            backdrop-filter: blur(20px);
+            border-top: 2px solid rgba(157, 78, 221, 0.3);
+            padding: 4rem 8% 2rem 8%;
+            margin-top: 5rem;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        .footer-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+            text-align: left;
+        }
+        
+        .footer-column h5 {
+            color: #00f2fe;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.2rem;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+            border-left: 3px solid #ff007f;
+            padding-left: 0.6rem;
+        }
+        
+        .footer-links-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links-list li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links-list a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links-list a:hover {
+            color: #ff007f;
+            padding-left: 6px;
+            text-shadow: 0 0 8px rgba(255, 0, 127, 0.5);
+        }
+
+        /* Expanded Multi-Channel Glowing App Vectors */
+        .cyber-social-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .social-glow-node {
+            display: block;
+            padding: 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        /* Specific App Neon Footprints */
+        .node-whatsapp {
+            color: #fff;
+            border: 1px solid #25d366;
+            background: rgba(37, 211, 102, 0.05);
+            box-shadow: inset 0 0 8px rgba(37, 211, 102, 0.2);
+        }
+        .node-whatsapp:hover { background: #25d366; box-shadow: 0 0 15px #25d366; color: #000; }
+                
+        .node-telegram {
+            color: #fff;
+            border: 1px solid #0088cc;
+            background: rgba(0, 136, 204, 0.05);
+            box-shadow: inset 0 0 8px rgba(0, 136, 204, 0.2);
+        }
+        .node-telegram:hover { background: #0088cc; box-shadow: 0 0 15px #0088cc; color: #000; }
+        
+        .node-instagram {
+            color: #fff;
+            border: 1px solid #e1306c;
+            background: rgba(225, 48, 108, 0.05);
+            box-shadow: inset 0 0 8px rgba(225, 48, 108, 0.2);
+        }
+        .node-instagram:hover { background: #e1306c; box-shadow: 0 0 15px #e1306c; color: #000; }
+        
+        .node-facebook {
+            color: #fff;
+            border: 1px solid #1877f2;
+            background: rgba(24, 119, 242, 0.05);
+            box-shadow: inset 0 0 8px rgba(24, 119, 242, 0.2);
+        }
+        .node-facebook:hover { background: #1877f2; box-shadow: 0 0 15px #1877f2; color: #000; }
+
+        .node-github {
+            color: #fff;
+            border: 1px solid #9d4edd;
+            background: rgba(157, 78, 221, 0.05);
+            box-shadow: inset 0 0 8px rgba(157, 78, 221, 0.2);
+        }
+        .node-github:hover { background: #9d4edd; box-shadow: 0 0 15px #9d4edd; color: #000; }
+        
+        .node-linkedin {
+            color: #fff;
+            border: 1px solid #00f2fe;
+            background: rgba(0, 242, 254, 0.05);
+            box-shadow: inset 0 0 8px rgba(0, 242, 254, 0.2);
+        }
+        .node-linkedin:hover { background: #00f2fe; box-shadow: 0 0 15px #00f2fe; color: #000; }
+
+        .footer-bottom-bar {
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        .footer-bottom-bar span {
+            color: #00f2fe;
+            text-shadow: 0 0 8px #00f2fe;
+        }
+    </style>
+</head>
+<body>
+    <div id="system-loader"><div class="loader-spinner"></div></div>
+    
+    <navbar>
+    <a href="{% url 'index' %}" class="brand-engine" style="display: flex; align-items: center; text-decoration: none;">
+        <img src="{% static 'images/port_logo.svg' %}" alt="CORE_NODE Logo" style="height: 50px; width: auto; border-radius: 50%; filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.7)); transition: all 0.3s ease;" onmouseover="this.style.filter='drop-shadow(0 0 15px #ff007f)';" onmouseout="this.style.filter='drop-shadow(0 0 10px rgba(0, 242, 254, 0.7))';">
+    </a>
+    <ul class="nav-grid">
+        <li><a href="{% url 'index' %}">System Status</a></li>
+        <li><a href="{% url 'capabilities' %}">Capabilities</a></li>
+        <li><a href="{% url 'vault' %}">Production Vault</a></li>
+        
+        <!-- Clean Dynamic Session Gate (Without Login link) -->
+        {% if request.session.ticket_id %}
+            <li>
+                <a href="{% url 'dashboard' %}" style="color: #00f2fe; text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);">Dashboard</a>
+            </li>
+            <li>
+                <a href="{% url 'logout' %}" style="color: #ff007f; text-shadow: 0 0 10px rgba(255, 0, 127, 0.4);">Disconnect</a>
+            </li>
+        {% else %}
+            <li><a href="{% url 'registry' %}">Network Registry</a></li>
+        {% endif %}
+    </ul>
+</navbar>
+
+    <div class="wrapper">
+        {% block master_content %}{% endblock %}
+    </div>
+
+    <footer>
+        <div class="footer-grid-container">
+            <!-- Column 1: Core Navigation Shortcuts -->
+            <div class="footer-column">
+                <h5>System Subnets</h5>
+                <ul class="footer-links-list">
+                    <li><a href="{% url 'index' %}">// Infrastructure Status</a></li>
+                    <li><a href="{% url 'capabilities' %}">// Engineering Capabilities</a></li>
+                    <li><a href="{% url 'vault' %}">// Production Vault Archive</a></li>
+                    <li><a href="{% url 'registry' %}">// Token Network Registry</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 2: Authentication & Gateways -->
+            <div class="footer-column">
+                <h5>Access Gateways</h5>
+                <ul class="footer-links-list">
+                    <li><a href="/admin/login/">// Core Admin Terminal Logins</a></li>
+                    <li><a href="{% url 'registry' %}">// Register Collaboration Identity</a></li>
+                    <li><a href="/admin/" target="_blank">// Database Management Portal</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 3: Custom Deployments Showcase Links -->
+            <div class="footer-column">
+                <h5>Production Builds</h5>
+                <ul class="footer-links-list">
+                    <li><a href="{% url 'vault' %}">// Digital Logbook System</a></li>
+                    <li><a href="{% url 'vault' %}">// Gender-Based Violence (GBV) Suite</a></li>
+                    <li><a href="{% url 'vault' %}">// AI Agricultural Water Quality Engine</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 4: Cyber Social Links Matrix -->
+            <div class="footer-column">
+                <h5>Network Signals</h5>
+                <div class="cyber-social-grid">
+                    <a href="https://wa.me/254700000000" target="_blank" class="social-glow-node node-whatsapp">WhatsApp</a>
+                    <a href="https://t.me/yourusername" target="_blank" class="social-glow-node node-telegram">Telegram</a>
+                    <a href="https://instagram.com" target="_blank" class="social-glow-node node-instagram">Instagram</a>
+                    <a href="https://facebook.com" target="_blank" class="social-glow-node node-facebook">Facebook</a>
+                    <a href="{% url 'registry' %}" target="_blank" class="social-glow-node node-github">GitHub</a>
+                    <a href="https://linkedin.com" target="_blank" class="social-glow-node node-linkedin">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom-bar">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <img src="{% static 'images/port_logo.svg' %}" alt="CORE_NODE Logo" style="height: 120px; width: auto; border-radius: 50%; filter: drop-shadow(0 0 20px rgba(157, 78, 221, 0.7)); opacity: 0.9; transition: all 0.3s ease;" onmouseover="this.style.filter='drop-shadow(0 0 30px #00f2fe)'; this.style.opacity='1';" onmouseout="this.style.filter='drop-shadow(0 0 20px rgba(157, 78, 221, 0.7))'; this.style.opacity='0.9';">
+            </div>
+            <p>© 2026 Software Engineering Lab. All Rights Reserved.</p>
+            <p style="font-size: 0.7rem; margin-top: 0.6rem; color: #334155; letter-spacing: 1px;">
+                SECURITY STATUS: ENCRYPTED // PIPELINES OPERATIONAL // ASYNC WORKERS ACTIVE
+            </p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/engine.js' %}"></script>
+</body>
+</html>

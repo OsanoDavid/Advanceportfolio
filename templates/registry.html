@@ -1,0 +1,828 @@
+{% extends 'base.html' %}
+{% block master_content %}
+<!-- Load Font Awesome for the interactive eye toggles -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* Wizard Steps Navigation */
+    .step-indicator-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3rem;
+        position: relative;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .step-indicator-line {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: rgba(148, 163, 184, 0.1);
+        z-index: 1;
+        transform: translateY(-50%);
+    }
+    .step-indicator-line-progress {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 0%;
+        height: 2px;
+        background: linear-gradient(90deg, #00f2fe, #ff007f);
+        box-shadow: 0 0 10px #ff007f;
+        z-index: 1;
+        transform: translateY(-50%);
+        transition: width 0.4s ease;
+    }
+    .step-node {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #020204;
+        border: 2px solid rgba(148, 163, 184, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        font-weight: bold;
+        font-size: 0.9rem;
+        color: #64748b;
+        position: relative;
+        z-index: 2;
+        transition: all 0.4s ease;
+    }
+    .step-node.active {
+        border-color: #00f2fe;
+        color: #00f2fe;
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+    }
+    .step-node.completed {
+        border-color: #ff007f;
+        color: #ff007f;
+        box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+    }
+
+    /* Form Step Container Transitions */
+    .form-step {
+        display: none;
+    }
+    .form-step.active {
+        display: block;
+        animation: stepFadeIn 0.5s ease forwards;
+    }
+    @keyframes stepFadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Interactive Input Fields */
+    .input-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    .cyber-label {
+        color: #94a3b8; 
+        font-size: 0.8rem; 
+        text-transform: uppercase; 
+        letter-spacing: 1px;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Multicolored glowing inputs with human-readable, high-contrast text styles */
+    .cyber-input {
+        width: 100%; 
+        padding: 0.85rem 1.1rem; 
+        background: #090911; 
+        border: 1px solid rgba(148, 163, 184, 0.25); 
+        color: #ffffff; 
+        font-size: 0.95rem;
+        border-radius: 6px;
+        font-family: system-ui, -apple-system, sans-serif;
+        transition: all 0.3s ease;
+    }
+    
+    /* Input Color Glow Focus Variants */
+    .glow-cyan:focus {
+        outline: none;
+        border-color: #00f2fe;
+        box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+        background: #0c0c1a;
+    }
+    .glow-purple:focus {
+        outline: none;
+        border-color: #9d4edd;
+        box-shadow: 0 0 12px rgba(157, 78, 221, 0.4);
+        background: #0c0c1a;
+    }
+    .glow-pink:focus {
+        outline: none;
+        border-color: #ff007f;
+        box-shadow: 0 0 12px rgba(255, 0, 127, 0.4);
+        background: #0c0c1a;
+    }
+    .glow-green:focus {
+        outline: none;
+        border-color: #39ff14;
+        box-shadow: 0 0 12px rgba(57, 255, 20, 0.4);
+        background: #0c0c1a;
+    }
+
+    /* Select element specific reset */
+    select.cyber-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1.2rem;
+        padding-right: 2.5rem;
+    }
+
+    /* Password Input with Eye */
+    .password-container {
+        position: relative;
+    }
+    .password-toggle-icon {
+        position: absolute;
+        right: 1.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        cursor: pointer;
+        transition: color 0.3s ease;
+        z-index: 10;
+    }
+    .password-toggle-icon:hover {
+        color: #ff007f;
+    }
+
+    /* Custom Selection Grid System */
+    .cyber-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0 1.5rem 0;
+    }
+    .cyber-option-card {
+        position: relative;
+        background: rgba(4, 4, 8, 0.7);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 6px;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        user-select: none;
+    }
+    .cyber-option-card input[type="checkbox"],
+    .cyber-option-card input[type="radio"] {
+        display: none;
+    }
+    .cyber-option-card span {
+        font-family: 'Courier New', monospace;
+        font-size: 0.8rem;
+        color: #94a3b8;
+        font-weight: bold;
+        display: block;
+    }
+    .cyber-option-card:hover {
+        border-color: rgba(0, 242, 254, 0.4);
+    }
+
+    /* Colored Card States on Check */
+    .cyber-option-card.accent-cyan input:checked + span { color: #00f2fe; text-shadow: 0 0 8px #00f2fe; }
+    .cyber-option-card.accent-cyan:has(input:checked) { border-color: #00f2fe; background: rgba(0, 242, 254, 0.05); box-shadow: 0 0 12px rgba(0, 242, 254, 0.2); }
+
+    .cyber-option-card.accent-pink input:checked + span { color: #ff007f; text-shadow: 0 0 8px #ff007f; }
+    .cyber-option-card.accent-pink:has(input:checked) { border-color: #ff007f; background: rgba(255, 0, 127, 0.05); box-shadow: 0 0 12px rgba(255, 0, 127, 0.2); }
+
+    .cyber-option-card.accent-purple input:checked + span { color: #9d4edd; text-shadow: 0 0 8px #9d4edd; }
+    .cyber-option-card.accent-purple:has(input:checked) { border-color: #9d4edd; background: rgba(157, 78, 221, 0.05); box-shadow: 0 0 12px rgba(157, 78, 221, 0.2); }
+
+    .cyber-option-card.accent-green input:checked + span { color: #39ff14; text-shadow: 0 0 8px #39ff14; }
+    .cyber-option-card.accent-green:has(input:checked) { border-color: #39ff14; background: rgba(57, 255, 20, 0.05); box-shadow: 0 0 12px rgba(57, 255, 20, 0.2); }
+
+    /* Conditional input panels with dynamic slides */
+    .conditional-panel {
+        display: none;
+        background: rgba(12, 12, 22, 0.6);
+        border-left: 3px solid #ff007f;
+        padding: 1.2rem;
+        margin-top: -0.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: 0 6px 6px 0;
+        animation: panelSlideDown 0.3s ease forwards;
+    }
+    @keyframes panelSlideDown {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Buttons */
+    .control-btn {
+        padding: 0.85rem 2rem;
+        font-family: monospace;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .btn-next {
+        background: linear-gradient(90deg, #00f2fe, #9d4edd);
+        border: none;
+        color: #fff;
+        box-shadow: 0 0 12px rgba(0, 242, 254, 0.3);
+    }
+    .btn-next:hover {
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
+        filter: brightness(1.1);
+    }
+    .btn-prev {
+        background: transparent;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        color: #94a3b8;
+    }
+    .btn-prev:hover {
+        border-color: #fff;
+        color: #fff;
+    }
+
+    /* Review Layout styling */
+    .review-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+    .review-box {
+        background: rgba(12, 12, 22, 0.5);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        padding: 1rem;
+        border-radius: 4px;
+    }
+    .review-box h6 {
+        color: #ff007f;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        margin: 0 0 0.5rem 0;
+        letter-spacing: 1px;
+    }
+    .review-box p {
+        color: #fff;
+        font-family: monospace;
+        margin: 0;
+        font-size: 0.9rem;
+        word-break: break-all;
+    }
+</style>
+
+<div class="wrapper" style="max-width: 850px; margin: 0 auto; padding: 2rem 1.5rem;">
+    <h2 style="font-size: 2.5rem; text-transform: uppercase; margin-bottom: 0.5rem; text-align: center;">
+        Network <span style="color:#ff007f;">Registry</span>
+    </h2>
+    <p style="color:#64748b; text-align:center; margin-bottom: 3rem; font-size: 0.95rem;">
+        Complete the three-stage identity handshake protocol to synchronize your profile.
+    </p>
+
+    <!-- Step Visual Progress Indicators -->
+    <div class="step-indicator-container">
+        <div class="step-indicator-line"></div>
+        <div class="step-indicator-line-progress" id="progressBar"></div>
+        
+        <div class="step-node active" id="node1">01</div>
+        <div class="step-node" id="node2">02</div>
+        <div class="step-node" id="node3">03</div>
+    </div>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div style="padding: 1.2rem; background: rgba(0, 242, 254, 0.1); border: 2px solid #00f2fe; color: #fff; border-radius: 4px; margin-bottom: 2rem; font-weight: bold;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="neon-card" style="background: rgba(4, 4, 8, 0.85); border: 1px solid rgba(157, 78, 221, 0.3); padding: 2.5rem; border-radius: 8px; box-shadow: 0 0 30px rgba(157, 78, 221, 0.05);">
+        <form method="POST" id="registryWizardForm" onsubmit="return validatePasswords()">
+            {% csrf_token %}
+            
+            <!-- STAGE 01: PERSONAL & CORE ACCESS DETAILS -->
+            <div class="form-step active" id="step1">
+                <h4 style="color: #00f2fe; margin-top: 0; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 1px; font-size: 1.1rem;">
+                    [ 01 // Personal Records & Security Initialization ]
+                </h4>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="input-group">
+                        <label class="cyber-label">Full Name</label>
+                        <input type="text" name="identity" id="id_identity" class="cyber-input glow-cyan" required placeholder="Osano David">
+                    </div>
+                    <div class="input-group">
+                        <label class="cyber-label">National Identity Card / ID Number</label>
+                        <input type="text" name="id_number" id="id_number" class="cyber-input glow-cyan" required placeholder="e.g. 38472910">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="input-group">
+                        <label class="cyber-label">Contact Relay Phone</label>
+                        <input type="tel" name="phone_number" id="id_phone_number" class="cyber-input glow-cyan" required placeholder="e.g. +254 700 000000">
+                    </div>
+                    <div class="input-group">
+                        <label class="cyber-label">Academic Registration Number</label>
+                        <input type="text" name="reg_number" id="id_reg_number" class="cyber-input glow-cyan" required placeholder="e.g. IN11/00000/21">
+                    </div>
+                </div>
+
+                <!-- Gender Selection System -->
+                <div class="input-group">
+                    <label class="cyber-label">Gender Designation</label>
+                    <div class="cyber-grid" style="margin-top: 0.5rem;">
+                        <label class="cyber-option-card accent-cyan">
+                            <input type="radio" name="gender" value="Male" class="gender-radio" required checked>
+                            <span>MALE</span>
+                        </label>
+                        <label class="cyber-option-card accent-pink">
+                            <input type="radio" name="gender" value="Female" class="gender-radio">
+                            <span>FEMALE</span>
+                        </label>
+                        <label class="cyber-option-card accent-purple">
+                            <input type="radio" name="gender" value="Prefer not to disclose" class="gender-radio">
+                            <span>PREFER NOT TO DISCLOSE</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="input-group">
+                        <label class="cyber-label">Communication Relay Email</label>
+                        <input type="email" name="email" id="id_email" class="cyber-input glow-cyan" required placeholder="developer@firm.com">
+                    </div>
+                    <div class="input-group">
+                        <label class="cyber-label">Institution / Organization</label>
+                        <select name="org_select" id="id_org_select" class="cyber-input glow-cyan" required onchange="toggleCustomOrgInput()">
+                            <option value="Kisii University">Kisii University</option>
+                            <option value="Other">Other (Specify Below)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Hidden Custom Organization Input -->
+                <div class="conditional-panel" id="customOrgPanel">
+                    <label class="cyber-label" style="color: #ff007f;">Enter Custom Institution Name</label>
+                    <input type="text" name="org_custom" id="id_org_custom" class="cyber-input glow-pink" placeholder="e.g. Nairobi University">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="input-group">
+                        <label class="cyber-label">Secure Access Password</label>
+                        <div class="password-container">
+                            <input type="password" name="password" id="id_password" class="cyber-input glow-cyan" required placeholder="••••••••">
+                            <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('id_password', this)"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="cyber-label">Confirm Access Password</label>
+                        <div class="password-container">
+                            <input type="password" name="password_confirm" id="id_password_confirm" class="cyber-input glow-cyan" required placeholder="••••••••">
+                            <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('id_password_confirm', this)"></i>
+                        </div>
+                        <span id="passwordError" style="color: #ff0055; font-size: 0.75rem; font-family: monospace; display: none; margin-top: 0.4rem;">WARNING: Password inputs fail verification check.</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="cyber-label">Portal System Username</label>
+                    <input type="text" name="username" id="id_username" class="cyber-input glow-cyan" required placeholder="Choose a unique username">
+                </div>
+
+                <div style="text-align: right; margin-top: 2rem;">
+                    <button type="button" class="control-btn btn-next" onclick="navigateToStep(2)">Proceed to Step 02 &rarr;</button>
+                </div>
+            </div>
+
+            <!-- STAGE 02: SOFTWARE SPECIALIZATION & SKILLS -->
+            <div class="form-step" id="step2">
+                <h4 style="color: #ff007f; margin-top: 0; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 1px; font-size: 1.1rem;">
+                    [ 02 // Developer Specializations & Core Architecture Stack ]
+                </h4>
+
+                <!-- 1. Specializations -->
+                <label class="cyber-label" style="color: #fff; font-size: 0.9rem;">1. Which architecture paths are you best in? (Choose all that apply)</label>
+                <div class="cyber-grid">
+                    <label class="cyber-option-card accent-pink">
+                        <input type="checkbox" name="specializations" value="Frontend" class="spec-cb">
+                        <span>FRONTEND</span>
+                    </label>
+                    <label class="cyber-option-card accent-pink">
+                        <input type="checkbox" name="specializations" value="Backend" class="spec-cb">
+                        <span>BACKEND</span>
+                    </label>
+                    <label class="cyber-option-card accent-pink">
+                        <input type="checkbox" name="specializations" value="Database" class="spec-cb">
+                        <span>DATABASE</span>
+                    </label>
+                    <label class="cyber-option-card accent-pink">
+                        <input type="checkbox" name="specializations" value="Middleware" class="spec-cb">
+                        <span>MIDDLEWARE</span>
+                    </label>
+                    <label class="cyber-option-card accent-pink">
+                        <input type="checkbox" name="specializations" value="Other" class="spec-cb" id="id_spec_other" onchange="toggleCustomSpecializationInput()">
+                        <span>OTHER</span>
+                    </label>
+                </div>
+                <div class="conditional-panel" id="customSpecPanel">
+                    <label class="cyber-label" style="color: #ff007f;">Specify Custom Specialization</label>
+                    <input type="text" name="spec_custom" id="id_spec_custom" class="cyber-input glow-pink" placeholder="e.g. Devops, Cloud Infrastructure">
+                </div>
+
+                <!-- 2. Languages -->
+                <label class="cyber-label" style="color: #fff; font-size: 0.9rem; margin-top: 2rem;">2. Programming Languages Expertise (Multi-select)</label>
+                <div class="cyber-grid">
+                    <label class="cyber-option-card accent-purple">
+                        <input type="checkbox" name="languages" value="Java" class="lang-cb">
+                        <span>JAVA</span>
+                    </label>
+                    <label class="cyber-option-card accent-purple">
+                        <input type="checkbox" name="languages" value="Python" class="lang-cb">
+                        <span>PYTHON</span>
+                    </label>
+                    <label class="cyber-option-card accent-purple">
+                        <input type="checkbox" name="languages" value="JavaScript" class="lang-cb">
+                        <span>JAVASCRIPT</span>
+                    </label>
+                    <label class="cyber-option-card accent-purple">
+                        <input type="checkbox" name="languages" value="TypeScript" class="lang-cb">
+                        <span>TYPESCRIPT</span>
+                    </label>
+                    <label class="cyber-option-card accent-purple">
+                        <input type="checkbox" name="languages" value="SQL" class="lang-cb">
+                        <span>SQL</span>
+                    </label>
+                    <label class="cyber-option-card accent-purple">
+                        <input type="checkbox" name="languages" value="Other" class="lang-cb" id="id_lang_other" onchange="toggleCustomLanguageInput()">
+                        <span>OTHER</span>
+                    </label>
+                </div>
+                <div class="conditional-panel" id="customLangPanel" style="border-left-color: #9d4edd;">
+                    <label class="cyber-label" style="color: #9d4edd;">Specify Custom Programming Language</label>
+                    <input type="text" name="lang_custom" id="id_lang_custom" class="cyber-input glow-purple" placeholder="e.g. Rust, Go, Kotlin">
+                </div>
+
+                <!-- 3. Styling -->
+                <label class="cyber-label" style="color: #fff; font-size: 0.9rem; margin-top: 2rem;">3. Styling, CSS Layout Engines & Tooling</label>
+                <div class="cyber-grid">
+                    <label class="cyber-option-card accent-green">
+                        <input type="checkbox" name="styling_tools" value="CSS3" class="style-cb">
+                        <span>CSS3 RAW</span>
+                    </label>
+                    <label class="cyber-option-card accent-green">
+                        <input type="checkbox" name="styling_tools" value="Tailwind CSS" class="style-cb">
+                        <span>TAILWIND CSS</span>
+                    </label>
+                    <label class="cyber-option-card accent-green">
+                        <input type="checkbox" name="styling_tools" value="Sass / SCSS" class="style-cb">
+                        <span>SASS / SCSS</span>
+                    </label>
+                    <label class="cyber-option-card accent-green">
+                        <input type="checkbox" name="styling_tools" value="Bootstrap" class="style-cb">
+                        <span>BOOTSTRAP</span>
+                    </label>
+                    <label class="cyber-option-card accent-green">
+                        <input type="checkbox" name="styling_tools" value="Other" class="style-cb" id="id_style_other" onchange="toggleCustomStylingInput()">
+                        <span>OTHER</span>
+                    </label>
+                </div>
+                <div class="conditional-panel" id="customStylePanel" style="border-left-color: #39ff14;">
+                    <label class="cyber-label" style="color: #39ff14;">Specify Custom CSS Stack Tool</label>
+                    <input type="text" name="style_custom" id="id_style_custom" class="cyber-input glow-green" placeholder="e.g. Material UI, styled-components">
+                </div>
+
+                <!-- 4. Systems Built Optionals -->
+                <div class="input-group" style="margin-top: 2rem;">
+                    <label class="cyber-label" style="color: #fff; font-size: 0.9rem;">4. Have you built any systems or software deployments?</label>
+                    <div class="cyber-grid" style="margin-top: 0.5rem; max-width: 300px;">
+                        <label class="cyber-option-card accent-cyan">
+                            <input type="radio" name="has_built_systems" value="Yes" onchange="toggleBuiltSystemsPanel(true)">
+                            <span>YES</span>
+                        </label>
+                        <label class="cyber-option-card accent-pink">
+                            <input type="radio" name="has_built_systems" value="No" onchange="toggleBuiltSystemsPanel(false)" checked>
+                            <span>NO</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Hidden Repository and Deployment Fields -->
+                <div class="conditional-panel" id="builtSystemsPanel" style="border-left-color: #00f2fe;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="input-group" style="margin-bottom: 0;">
+                            <label class="cyber-label" style="color: #00f2fe;">GitHub Repository Link</label>
+                            <input type="url" name="github_link" id="id_github_link" class="cyber-input glow-cyan" placeholder="https://github.com/username/project">
+                        </div>
+                        <div class="input-group" style="margin-bottom: 0;">
+                            <label class="cyber-label" style="color: #00f2fe;">Live Deployment URL</label>
+                            <input type="url" name="live_link" id="id_live_link" class="cyber-input glow-cyan" placeholder="https://project.koyeb.app">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-top: 2rem;">
+                    <label class="cyber-label">Scope Specification / Core Framework Strengths</label>
+                    <textarea name="scope" id="id_scope" class="cyber-input glow-pink" rows="4" required placeholder="Describe projects or systems you've worked on (e.g. Spring Boot, Django microservices, GBV system, etc.)..."></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                    <button type="button" class="control-btn btn-prev" onclick="navigateToStep(1)">&larr; Back to Step 01</button>
+                    <button type="button" class="control-btn btn-next" onclick="prepareAndShowReviewStep()">Compile System Review &rarr;</button>
+                </div>
+            </div>
+
+            <!-- STAGE 03: HANDSHAKE REVIEW & DATABASE SUBMIT -->
+            <div class="form-step" id="step3">
+                <h4 style="color: #9d4edd; margin-top: 0; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 1px; font-size: 1.1rem;">
+                    [ 03 // System Verification & Handshake Integrity Check ]
+                </h4>
+                <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 2rem;">
+                    Review your parameters to execute a clean data insertion pipeline. Any invalid profile metadata can lock node functionality.
+                </p>
+
+                <div class="review-grid">
+                    <div class="review-box">
+                        <h6>Full Name</h6>
+                        <p id="rev_identity">-</p>
+                    </div>
+                    <div class="review-box">
+                        <h6>ID Number</h6>
+                        <p id="rev_id_number">-</p>
+                    </div>
+                    <div class="review-box">
+                        <h6>Phone Number</h6>
+                        <p id="rev_phone_number">-</p>
+                    </div>
+                    <div class="review-box">
+                        <h6>Registration ID</h6>
+                        <p id="rev_reg_number">-</p>
+                    </div>
+                    <div class="review-box">
+                        <h6>Gender Designation</h6>
+                        <p id="rev_gender">-</p>
+                    </div>
+                    <div class="review-box">
+                        <h6>Institution / Org</h6>
+                        <p id="rev_org">-</p>
+                    </div>
+                    <div class="review-box">
+                        <h6>Email Node</h6>
+                        <p id="rev_email">-</p>
+                    </div>
+                    <div class="review-box">
+                        <h6>Username</h6>
+                        <p id="rev_username">-</p>
+                    </div>
+                    <div class="review-box" style="grid-column: span 2;">
+                        <h6>Specializations Selected</h6>
+                        <p id="rev_specs">-</p>
+                    </div>
+                    <div class="review-box" style="grid-column: span 2;">
+                        <h6>Programming Stack</h6>
+                        <p id="rev_langs">-</p>
+                    </div>
+                    <div class="review-box" style="grid-column: span 2;">
+                        <h6>Styling Frameworks</h6>
+                        <p id="rev_styling">-</p>
+                    </div>
+                    <div class="review-box" style="grid-column: span 2; display: none;" id="rev_system_links_box">
+                        <h6>Systems Built & Deployed</h6>
+                        <p id="rev_system_links">-</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
+                    <button type="button" class="control-btn btn-prev" onclick="navigateToStep(2)">&larr; Modify Parameters</button>
+                    <button type="submit" class="control-btn btn-next" style="background: linear-gradient(90deg, #ff007f, #9d4edd); box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);">
+                        Deploy Registry Footprint
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <p style="text-align: center; margin-top: 2rem; color: #64748b; font-size: 0.9rem;">
+        Already registered? <a href="{% url 'login' %}" style="color: #00f2fe; text-decoration: none; font-weight: bold;">Unlock Session Access &rarr;</a>
+    </p>
+</div>
+
+<!-- Progressive Step Controller Engine Script -->
+<script>
+    function togglePasswordVisibility(fieldId, iconElement) {
+        const input = document.getElementById(fieldId);
+        if (input.type === "password") {
+            input.type = "text";
+            iconElement.classList.remove("fa-eye");
+            iconElement.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            iconElement.classList.add("fa-eye");
+            iconElement.classList.remove("fa-eye-slash");
+        }
+    }
+
+    // Conditional field handlers
+    function toggleCustomOrgInput() {
+        const select = document.getElementById("id_org_select");
+        const panel = document.getElementById("customOrgPanel");
+        const customInput = document.getElementById("id_org_custom");
+        if (select.value === "Other") {
+            panel.style.display = "block";
+            customInput.required = true;
+        } else {
+            panel.style.display = "none";
+            customInput.required = false;
+        }
+    }
+
+    function toggleCustomSpecializationInput() {
+        const otherChecked = document.getElementById("id_spec_other").checked;
+        const panel = document.getElementById("customSpecPanel");
+        const input = document.getElementById("id_spec_custom");
+        panel.style.display = otherChecked ? "block" : "none";
+        input.required = otherChecked;
+    }
+
+    function toggleCustomLanguageInput() {
+        const otherChecked = document.getElementById("id_lang_other").checked;
+        const panel = document.getElementById("customLangPanel");
+        const input = document.getElementById("id_lang_custom");
+        panel.style.display = otherChecked ? "block" : "none";
+        input.required = otherChecked;
+    }
+
+    function toggleCustomStylingInput() {
+        const otherChecked = document.getElementById("id_style_other").checked;
+        const panel = document.getElementById("customStylePanel");
+        const input = document.getElementById("id_style_custom");
+        panel.style.display = otherChecked ? "block" : "none";
+        input.required = otherChecked;
+    }
+
+    function toggleBuiltSystemsPanel(show) {
+        const panel = document.getElementById("builtSystemsPanel");
+        panel.style.display = show ? "block" : "none";
+    }
+
+    function navigateToStep(stepNumber) {
+        // Step 1 Validation Gate
+        if (stepNumber === 2) {
+            const requiredFields = ["id_identity", "id_number", "id_phone_number", "id_reg_number", "id_email", "id_username", "id_password", "id_password_confirm"];
+            let isValid = true;
+            requiredFields.forEach(fieldId => {
+                const el = document.getElementById(fieldId);
+                if (!el.value.trim()) {
+                    el.style.borderColor = "#ff0055";
+                    isValid = false;
+                } else {
+                    el.style.borderColor = "rgba(148,163,184,0.25)";
+                }
+            });
+            
+            // Check custom org if active
+            const orgSelect = document.getElementById("id_org_select");
+            if (orgSelect.value === "Other") {
+                const customOrg = document.getElementById("id_org_custom");
+                if (!customOrg.value.trim()) {
+                    customOrg.style.borderColor = "#ff0055";
+                    isValid = false;
+                }
+            }
+
+            if (!isValid) {
+                alert("CRITICAL ERROR: Please fill all required personal parameters in Stage 01.");
+                return;
+            }
+
+            if (!validatePasswords()) {
+                return;
+            }
+        }
+
+        // De-activate all stages
+        document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
+        document.querySelectorAll('.step-node').forEach(node => node.classList.remove('active', 'completed'));
+
+        // Activate step view
+        document.getElementById(`step${stepNumber}`).classList.add('active');
+
+        // Render Step Nodes UI Progress
+        for (let i = 1; i <= 3; i++) {
+            const node = document.getElementById(`node${i}`);
+            if (i < stepNumber) {
+                node.classList.add('completed');
+            } else if (i === stepNumber) {
+                node.classList.add('active');
+            }
+        }
+
+        // Adjust line progress width
+        const progressPercent = ((stepNumber - 1) / 2) * 100;
+        document.getElementById('progressBar').style.width = `${progressPercent}%`;
+    }
+
+    function validatePasswords() {
+        const pass = document.getElementById("id_password").value;
+        const confirm = document.getElementById("id_password_confirm").value;
+        const errorMsg = document.getElementById("passwordError");
+
+        if (pass !== confirm) {
+            errorMsg.style.display = "block";
+            document.getElementById("id_password_confirm").style.borderColor = "#ff0055";
+            return false;
+        } else {
+            errorMsg.style.display = "none";
+            document.getElementById("id_password_confirm").style.borderColor = "rgba(148,163,184,0.25)";
+            return true;
+        }
+    }
+
+    function prepareAndShowReviewStep() {
+        const scopeText = document.getElementById('id_scope');
+        if (!scopeText.value.trim()) {
+            scopeText.style.borderColor = "#ff0055";
+            alert("Please specify your scope requirements or core experiences.");
+            return;
+        }
+        scopeText.style.borderColor = "rgba(148,163,184,0.25)";
+
+        // Set static identity text
+        document.getElementById('rev_identity').innerText = document.getElementById('id_identity').value;
+        document.getElementById('rev_id_number').innerText = document.getElementById('id_number').value;
+        document.getElementById('rev_phone_number').innerText = document.getElementById('id_phone_number').value;
+        document.getElementById('rev_reg_number').innerText = document.getElementById('id_reg_number').value;
+        document.getElementById('rev_email').innerText = document.getElementById('id_email').value;
+        document.getElementById('rev_username').innerText = document.getElementById('id_username').value;
+
+        // Gender review output
+        const selectedGender = document.querySelector('.gender-radio:checked').value;
+        document.getElementById('rev_gender').innerText = selectedGender;
+
+        // Organization review output
+        const orgSelect = document.getElementById("id_org_select").value;
+        document.getElementById('rev_org').innerText = orgSelect === "Other" ? document.getElementById("id_org_custom").value : orgSelect;
+
+        // Specializations
+        const specList = [];
+        document.querySelectorAll('.spec-cb:checked').forEach(cb => {
+            if (cb.value === "Other") {
+                const customVal = document.getElementById("id_spec_custom").value;
+                if (customVal) specList.push(`Other (${customVal})`);
+            } else {
+                specList.push(cb.value);
+            }
+        });
+        document.getElementById('rev_specs').innerText = specList.length > 0 ? specList.join(', ') : "None selected";
+
+        // Programming Languages
+        const langList = [];
+        document.querySelectorAll('.lang-cb:checked').forEach(cb => {
+            if (cb.value === "Other") {
+                const customVal = document.getElementById("id_lang_custom").value;
+                if (customVal) langList.push(`Other (${customVal})`);
+            } else {
+                langList.push(cb.value);
+            }
+        });
+        document.getElementById('rev_langs').innerText = langList.length > 0 ? langList.join(', ') : "None selected";
+
+        // Styling Stack
+        const styleList = [];
+        document.querySelectorAll('.style-cb:checked').forEach(cb => {
+            if (cb.value === "Other") {
+                const customVal = document.getElementById("id_style_custom").value;
+                if (customVal) styleList.push(`Other (${customVal})`);
+            } else {
+                styleList.push(cb.value);
+            }
+        });
+        document.getElementById('rev_styling').innerText = styleList.length > 0 ? styleList.join(', ') : "None selected";
+
+        // Systems deployment urls if Yes is active
+        const hasBuilt = document.querySelector('input[name="has_built_systems"]:checked').value;
+        const linksBox = document.getElementById("rev_system_links_box");
+        if (hasBuilt === "Yes") {
+            const gitLink = document.getElementById("id_github_link").value || "No repo added";
+            const deployLink = document.getElementById("id_live_link").value || "No live deploy link";
+            document.getElementById("rev_system_links").innerHTML = `Repository: ${gitLink}<br>Live Deployment: ${deployLink}`;
+            linksBox.style.display = "block";
+        } else {
+            linksBox.style.display = "none";
+        }
+
+        navigateToStep(3);
+    }
+</script>
+{% endblock %}

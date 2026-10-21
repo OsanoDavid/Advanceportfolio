@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block master_content %}
+<div class="wrapper" style="padding: 2rem 8%;">
+    
+    <!-- IF USER IS LOGGED IN AND APPROVED BY YOU -->
+    {% if user.is_authenticated %}
+    <div style="margin-bottom: 3rem;">
+        <p style="color: #39ff14; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">[ ACCESS GRANTED // CREDENTIALS VERIFIED ]</p>
+        <h1 style="color: #fff; font-size: 2.5rem; margin-top: 0.5rem;">Developer Training & <span style="color: #00f2fe;">Resource Matrix</span></h1>
+        <p style="color: #64748b; margin-top: 0.5rem;">Welcome to the inner sanctum. Explore computer packages, source blueprints, and developmental activities below.</p>
+    </div>
+
+    <!-- Grid Container for Training Resources -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        
+        <!-- Package 1: Advanced Full-Stack Architecture -->
+        <div style="background: rgba(30, 30, 50, 0.4); border: 1px solid rgba(0, 242, 254, 0.3); padding: 2rem; border-radius: 8px; box-shadow: 0 0 15px rgba(0, 242, 254, 0.05);">
+            <div style="color: #00f2fe; font-size: 0.8rem; font-weight: bold; margin-bottom: 0.5rem;">MODULE 01 // ENTERPRISE CODEBASE</div>
+            <h3 style="color: #fff; margin-bottom: 1rem;">Full-Stack Engineering & Automations</h3>
+            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+                Deep dives into backend engine development, secure API endpoints, logic layers, and complex relational databases.
+            </p>
+            <span style="color: #39ff14; font-size: 0.85rem; font-weight: bold;">● Active Training Material</span>
+        </div>
+
+        <!-- Package 2: Essential Computer Applications Package -->
+        <div style="background: rgba(30, 30, 50, 0.4); border: 1px solid rgba(255, 0, 127, 0.3); padding: 2rem; border-radius: 8px; box-shadow: 0 0 15px rgba(255, 0, 127, 0.05);">
+            <div style="color: #ff007f; font-size: 0.8rem; font-weight: bold; margin-bottom: 0.5rem;">MODULE 02 // OPERATIONS PACK</div>
+            <h3 style="color: #fff; margin-bottom: 1rem;">Computer Packages & System Fundamentals</h3>
+            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+                Comprehensive learning materials covering core network management, advanced operating system tasks, and workplace application productivity suites.
+            </p>
+            <span style="color: #39ff14; font-size: 0.85rem; font-weight: bold;">● Material Verified</span>
+        </div>
+
+        <!-- Package 3: Development & Live Labs Tracker -->
+        <div style="background: rgba(30, 30, 50, 0.4); border: 1px solid rgba(157, 78, 221, 0.3); padding: 2rem; border-radius: 8px; box-shadow: 0 0 15px rgba(157, 78, 221, 0.05);">
+            <div style="color: #9d4edd; font-size: 0.8rem; font-weight: bold; margin-bottom: 0.5rem;">MODULE 03 // LAB ACTIVITY TRACKER</div>
+            <h3 style="color: #fff; margin-bottom: 1rem;">Practical Tasks & Project Milestones</h3>
+            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+                Access live tasks to master application logic building, script scheduling, and interface formatting.
+            </p>
+            <span style="color: #00f2fe; font-size: 0.85rem; font-weight: bold;">🔒 Code Repositories Safe inside Gateway</span>
+        </div>
+    </div>
+
+    <!-- IF GUEST USER TRIES TO ACCESS WITHOUT LOGGING IN / BEING APPROVED -->
+    {% else %}
+    <div style="text-align: center; max-width: 600px; margin: 6rem auto; padding: 3rem; background: rgba(20, 10, 25, 0.8); border: 2px solid #ff007f; border-radius: 8px; box-shadow: 0 0 30px rgba(255, 0, 127, 0.2);">
+        <p style="color: #ff007f; font-size: 3rem; margin-bottom: 1rem;">⚠️</p>
+        <h2 style="color: #fff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem;">Access Terminated</h2>
+        <p style="color: #94a3b8; line-height: 1.7; margin-bottom: 2rem;">
+            This training dashboard containing source systems, development exercises, and computer package matrices is locked. You must register an identity account and await manual review by the system engineer.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="{% url 'registry' %}" style="background: #ff007f; color: #fff; padding: 0.8rem 1.5rem; text-decoration: none; font-weight: bold; border-radius: 4px; box-shadow: 0 0 15px #ff007f;">Create Account</a>
+            <a href="/admin/login/" style="background: transparent; color: #00f2fe; border: 1px solid #00f2fe; padding: 0.8rem 1.5rem; text-decoration: none; font-weight: bold; border-radius: 4px;">Log In</a>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
