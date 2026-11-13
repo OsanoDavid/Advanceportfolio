@@ -148,11 +148,32 @@ def registry_view(request):
     if request.method == "POST":
         identity = request.POST.get('identity', '').strip()
         email = request.POST.get('email', '').strip()
+        id_number = request.POST.get('id_number', '').strip()
+        phone_number = request.POST.get('phone_number', '').strip()
+        reg_number = request.POST.get('reg_number', '').strip()
+        gender = request.POST.get('gender', '').strip()
         
-        org = request.POST.get('org') or request.POST.get('associated_organization') or "Independent Node"
-        scope = request.POST.get('scope') or "General"
+        org_select = request.POST.get('org_select', '')
+        org_custom = request.POST.get('org_custom', '').strip()
+        if org_select == 'Other' and org_custom:
+            org = org_custom
+        else:
+            org = org_custom or org_select or request.POST.get('org') or request.POST.get('associated_organization') or "Independent Node"
+            
+        scope = request.POST.get('scope', '').strip() or "General Software Development"
         
-        specialization = request.POST.get('specialization') or "Full-Stack Developer"
+        specializations = request.POST.getlist('specializations')
+        custom_spec = request.POST.get('spec_custom', '').strip()
+        if custom_spec and 'Other' in specializations:
+            specializations = [s for s in specializations if s != 'Other'] + [custom_spec]
+        if specializations:
+            specialization = ", ".join(specializations)
+        else:
+            specialization = request.POST.get('specialization') or "Full-Stack Developer"
+
+        github_link = request.POST.get('github_link', '').strip()
+        live_link = request.POST.get('live_link', '').strip()
+        
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
         password_confirm = request.POST.get('password_confirm', '')
@@ -164,34 +185,39 @@ def registry_view(request):
         # Check if the username already exists in the database
         if NetworkRegistryTicket.objects.filter(username=username).exists():
             messages.error(request, "REGISTRATION FAILED: Username already exists.")
-            return redirect('registry')  # Redirects back to the registry page
+            return redirect('registry')
             
-        # Optional: Check if email already exists as well
+        # Check if email already exists
         if NetworkRegistryTicket.objects.filter(secure_email=email).exists():
             messages.error(request, "REGISTRATION FAILED: Email already exists.")
             return redirect('registry')
 
         try:
-            NetworkRegistryTicket.objects.create(
+            ticket = NetworkRegistryTicket.objects.create(
                 full_identity=identity, 
                 secure_email=email,
                 associated_organization=org, 
                 collaboration_scope=scope,
                 specialization=specialization,
                 username=username,
-                password=make_password(password)
+                password=make_password(password),
+                phone_number=phone_number,
+                id_number=id_number,
+                reg_number=reg_number,
+                gender=gender,
+                github_link=github_link,
+                live_link=live_link,
             )
-            messages.success(request, "CRITICAL UPDATE: Developer registration ticket successfully committed to the database.")
-            return redirect('login') 
+            # Establish session and activate developer profile immediately
+            request.session['ticket_id'] = ticket.id
+            messages.success(request, f"PROFILE ACTIVATED: Identity verified. Welcome to CORE_NODE, {ticket.full_identity}!")
+            return redirect('dashboard')
             
         except Exception as e:
             messages.error(request, "CRITICAL ERROR: Failed to write to the registry database.")
             return redirect('registry')
         
     return render(request, 'registry.html')
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import NetworkRegistryTicket, ProductionWork  # Ensure your models are imported
 
 def login_view(request):
     if request.method == "POST":
@@ -244,8 +270,72 @@ def dashboard_view(request):
     except NetworkRegistryTicket.DoesNotExist:
         return redirect('login')
         
-    # Pass the user's registry ticket details to the dashboard template
-    return render(request, 'dashboard.html', {'ticket': ticket})
+    if request.method == "POST":
+        action = request.POST.get('action')
+        if action == 'update_profile':
+            new_identity = request.POST.get('full_identity', '').strip()
+            new_org = request.POST.get('associated_organization', '').strip()
+            new_phone = request.POST.get('phone_number', '').strip()
+            new_spec = request.POST.get('specialization', '').strip()
+            new_scope = request.POST.get('collaboration_scope', '').strip()
+            new_github = request.POST.get('github_link', '').strip()
+            new_live = request.POST.get('live_link', '').strip()
+            
+            if new_identity:
+                ticket.full_identity = new_identity
+            if new_org:
+                ticket.associated_organization = new_org
+            ticket.phone_number = new_phone
+            if new_spec:
+                ticket.specialization = new_spec
+            if new_scope:
+                ticket.collaboration_scope = new_scope
+            ticket.github_link = new_github
+            ticket.live_link = new_live
+            ticket.save()
+            messages.success(request, "PROFILE RE-CONFIGURED: Node telemetry and profile data updated successfully.")
+            return redirect('dashboard')
+            
+        elif action == 'change_password':
+            old_pwd = request.POST.get('old_password', '')
+            new_pwd = request.POST.get('new_password', '')
+            confirm_pwd = request.POST.get('confirm_password', '')
+            
+            if not check_password(old_pwd, ticket.password or ''):
+                messages.error(request, "SECURITY ALERT: Current password verification failed.")
+            elif len(new_pwd) < 6:
+                messages.error(request, "SECURITY ALERT: New password must be at least 6 characters.")
+            elif new_pwd != confirm_pwd:
+                messages.error(request, "SECURITY ALERT: New password and confirmation do not match.")
+            else:
+                ticket.password = make_password(new_pwd)
+                ticket.save(update_fields=['password'])
+                messages.success(request, "SECURITY PROTOCOL UPDATED: Access credentials successfully changed.")
+            return redirect('dashboard')
+            
+        elif action == 'send_inquiry':
+            msg_text = request.POST.get('message', '').strip()
+            subject = request.POST.get('subject', 'Project Proposal').strip()
+            if not msg_text:
+                messages.error(request, "TRANSMISSION ERROR: Message content cannot be empty.")
+            else:
+                full_msg = f"[{subject.upper()}] {msg_text}"
+                ContactMessage.objects.create(
+                    name=f"{ticket.full_identity} (@{ticket.username})",
+                    email=ticket.secure_email,
+                    message=full_msg,
+                )
+                messages.success(request, "TRANSMISSION CONFIRMED: Your message was securely routed to David Osano's terminal.")
+            return redirect('dashboard')
+
+    user_messages = ContactMessage.objects.filter(email=ticket.secure_email).order_by('-received_at')[:5]
+    context = {
+        'ticket': ticket,
+        'user_messages': user_messages,
+        'works_count': ProductionWork.objects.count(),
+        'services_count': CoreService.objects.count(),
+    }
+    return render(request, 'dashboard.html', context)
 
 def logout_view(request):
     if 'ticket_id' in request.session:

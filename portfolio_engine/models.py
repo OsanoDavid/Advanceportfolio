@@ -43,6 +43,14 @@ class NetworkRegistryTicket(models.Model):
     username = models.CharField(max_length=150, unique=True, null=True, blank=True)
     password = models.CharField(max_length=128, null=True, blank=True) # Standard password character length limit
     
+    # Profile & Identity Fields
+    phone_number = models.CharField(max_length=40, blank=True, default='')
+    id_number = models.CharField(max_length=50, blank=True, default='')
+    reg_number = models.CharField(max_length=50, blank=True, default='')
+    gender = models.CharField(max_length=30, blank=True, default='')
+    github_link = models.URLField(blank=True, default='')
+    live_link = models.URLField(blank=True, default='')
+    
     registered_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

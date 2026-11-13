@@ -150,9 +150,12 @@
         .personal-stage-layout { grid-template-columns: 1fr; }
         .registry-checklist { position: static; }
         .registry-checklist-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        #step1 .personal-stage-fields [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+        .personal-stage-fields [style*="grid-template-columns: 1fr 1fr"],
+        .conditional-panel [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; gap: 1rem !important; }
         .review-grid { grid-template-columns: minmax(0, 1fr); }
         .review-box[style*="grid-column"] { grid-column: 1 / -1 !important; }
+        .cyber-input { font-size: 16px !important; }
+        .control-btn { min-height: 48px; padding: 0.85rem 1.2rem; }
     }
     .cyber-label {
         color: #94a3b8; 

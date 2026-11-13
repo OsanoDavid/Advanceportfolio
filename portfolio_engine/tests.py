@@ -93,11 +93,13 @@ class RegistryAccessTests(TestCase):
             'password_confirm': 'long-test-password',
         })
 
-        self.assertRedirects(registration_response, reverse('login'), fetch_redirect_response=False)
+        self.assertRedirects(registration_response, reverse('dashboard'), fetch_redirect_response=False)
         ticket = NetworkRegistryTicket.objects.get(username='testdeveloper')
         self.assertNotEqual(ticket.password, 'long-test-password')
         self.assertTrue(check_password('long-test-password', ticket.password))
 
+        # Clear session to verify independent login flow
+        self.client.session.clear()
         login_response = self.client.post(reverse('login'), {
             'username': 'testdeveloper',
             'password': 'long-test-password',

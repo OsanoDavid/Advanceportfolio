@@ -1,91 +1,347 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block content %}
-<div class="wrapper" style="max-width: 900px; margin: 4rem auto; padding: 2rem 1.5rem;">
-    <!-- Dashboard Header -->
-    <h2 class="glowing-title" style="text-align: center; font-family: monospace; font-size: 2rem; margin-bottom: 0.5rem;">
-        TERMINAL <span style="color:#00f2fe; text-shadow: 0 0 15px rgba(0, 242, 254, 0.6);">DASHBOARD</span>
-    </h2>
-    <p style="color:#64748b; text-align:center; margin-bottom: 3rem; font-size: 0.9rem; letter-spacing: 0.5px; font-family: monospace;">
-        Secure session active // Node verification complete // Welcome back, {{ ticket.full_identity }}.
-    </p>
+{% block master_content %}
+<div class="wrapper dashboard-wrapper">
 
-    <!-- Interactive Grid Layout -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; font-family: monospace;">
-        
-        <!-- COLUMN 1: System Identity Card -->
-        <div class="neon-card" style="background: rgba(4, 4, 8, 0.9); border: 1px solid rgba(0, 242, 254, 0.25); padding: 2rem; border-radius: 8px; box-shadow: 0 0 30px rgba(0, 242, 254, 0.05);">
-            <h3 style="color: #ff007f; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255, 0, 127, 0.2); padding-bottom: 0.5rem; font-size: 1.1rem; letter-spacing: 1px;">
-                [ SECURITY CREDENTIALS ]
-            </h3>
+    <!-- Dashboard Terminal Header -->
+    <header class="dashboard-header reveal-stagger">
+        <div class="dashboard-status-tag">
+            <span class="status-pulse-dot"></span>
+            <span>SECURE TERMINAL // NODE ID: #NODE-{{ ticket.id|stringformat:"04d" }} // STATUS: VERIFIED</span>
+        </div>
+        <h1 class="dashboard-title">
+            DEVELOPER <span class="cyan-glow">PROFILE</span> & <span class="pink-glow">COMMAND CENTER</span>
+        </h1>
+        <p class="dashboard-subtitle">
+            Active identity session verified for <strong style="color: #00f2fe;">{{ ticket.full_identity }}</strong> (@{{ ticket.username }}).
+        </p>
+    </header>
+
+    <!-- Feedback messages -->
+    {% if messages %}
+    <div class="dashboard-messages-area" role="alert">
+        {% for message in messages %}
+        <div class="cyber-alert-box {% if message.tags %}{{ message.tags }}{% endif %}">
+            <span class="cyber-alert-tag">[ SYSTEM NOTIFICATION ]</span>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Dashboard Grid Layout -->
+    <div class="dashboard-main-grid">
+
+        <!-- COLUMN 1: System Identity & Profile Matrix -->
+        <div class="dashboard-column">
             
-            <table style="width: 100%; color: #fff; border-collapse: collapse; font-size: 0.9rem;">
-                <tr style="border-bottom: 1px solid rgba(100, 116, 139, 0.15);">
-                    <td style="padding: 0.8rem 0; color: #64748b;">Node Identity:</td>
-                    <td style="padding: 0.8rem 0; text-align: right; font-weight: bold; color: #00f2fe;">{{ ticket.full_identity }}</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(100, 116, 139, 0.15);">
-                    <td style="padding: 0.8rem 0; color: #64748b;">Secure Email:</td>
-                    <td style="padding: 0.8rem 0; text-align: right; color: #fff;">{{ ticket.secure_email }}</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(100, 116, 139, 0.15);">
-                    <td style="padding: 0.8rem 0; color: #64748b;">Organization:</td>
-                    <td style="padding: 0.8rem 0; text-align: right; color: #fff;">{{ ticket.associated_organization }}</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(100, 116, 139, 0.15);">
-                    <td style="padding: 0.8rem 0; color: #64748b;">Specialization:</td>
-                    <td style="padding: 0.8rem 0; text-align: right; color: #00f2fe;">{{ ticket.specialization }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 0.8rem 0; color: #64748b;">Auth Username:</td>
-                    <td style="padding: 0.8rem 0; text-align: right; color: #ff007f;">@{{ ticket.username }}</td>
-                </tr>
-            </table>
+            <section class="neon-card profile-card" aria-labelledby="profile-title">
+                <div class="profile-card-header">
+                    <div class="profile-avatar-node">
+                        <span>{{ ticket.full_identity|slice:":2"|upper }}</span>
+                        <span class="avatar-status-badge" title="Node Online"></span>
+                    </div>
+                    <div class="profile-title-block">
+                        <h2 id="profile-title" class="profile-user-name">{{ ticket.full_identity }}</h2>
+                        <span class="profile-username-tag">@{{ ticket.username }}</span>
+                        <div class="profile-badge-row">
+                            <span class="cyber-pill pill-cyan">{{ ticket.specialization }}</span>
+                            <span class="cyber-pill pill-pink">LEVEL_03 CLEARANCE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-details-table">
+                    <div class="profile-detail-row">
+                        <span class="detail-label">Communication Relay (Email)</span>
+                        <span class="detail-value value-highlight">{{ ticket.secure_email }}</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <span class="detail-label">Contact Relay Phone</span>
+                        <span class="detail-value">{% if ticket.phone_number %}{{ ticket.phone_number }}{% else %}<span style="color: #64748b;">Not configured</span>{% endif %}</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <span class="detail-label">Affiliation / Organization</span>
+                        <span class="detail-value">{{ ticket.associated_organization|default:"Independent Node" }}</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <span class="detail-label">Specialization Path</span>
+                        <span class="detail-value value-cyan">{{ ticket.specialization }}</span>
+                    </div>
+                    {% if ticket.reg_number %}
+                    <div class="profile-detail-row">
+                        <span class="detail-label">Academic Reg Number</span>
+                        <span class="detail-value">{{ ticket.reg_number }}</span>
+                    </div>
+                    {% endif %}
+                    {% if ticket.gender %}
+                    <div class="profile-detail-row">
+                        <span class="detail-label">Gender Designation</span>
+                        <span class="detail-value">{{ ticket.gender }}</span>
+                    </div>
+                    {% endif %}
+                    {% if ticket.github_link %}
+                    <div class="profile-detail-row">
+                        <span class="detail-label">GitHub Workspace</span>
+                        <span class="detail-value"><a href="{{ ticket.github_link }}" target="_blank" rel="noopener noreferrer" style="color: #9d4edd; text-decoration: underline;">View Code Repo &rarr;</a></span>
+                    </div>
+                    {% endif %}
+                    {% if ticket.live_link %}
+                    <div class="profile-detail-row">
+                        <span class="detail-label">Live Deployment</span>
+                        <span class="detail-value"><a href="{{ ticket.live_link }}" target="_blank" rel="noopener noreferrer" style="color: #00f2fe; text-decoration: underline;">Open Deployment &rarr;</a></span>
+                    </div>
+                    {% endif %}
+                    <div class="profile-detail-row">
+                        <span class="detail-label">Framework Strengths & Scope</span>
+                        <span class="detail-value" style="font-size: 0.85rem; line-height: 1.5; color: #cbd5e1;">{{ ticket.collaboration_scope|default:"Full-stack engineering & collaboration." }}</span>
+                    </div>
+                    <div class="profile-detail-row" style="border-bottom: none;">
+                        <span class="detail-label">Registration Handshake</span>
+                        <span class="detail-value" style="color: #64748b; font-size: 0.8rem;">{{ ticket.registered_at|date:"M d, Y · H:i e" }}</span>
+                    </div>
+                </div>
+
+                <!-- Edit Profile Trigger -->
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
+                        ⚙ EDIT NODE PROFILE TELEMETRY
+                    </button>
+                </div>
+
+                <!-- Collapsible Edit Profile Form -->
+                <div id="edit-profile-panel" class="collapsible-panel" style="display: none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed rgba(0, 242, 254, 0.3);">
+                    <h3 style="color: #00f2fe; font-size: 1rem; margin-top: 0; margin-bottom: 1rem; text-transform: uppercase;">
+                        [ Configure Node Profile Details ]
+                    </h3>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_profile">
+
+                        <div class="form-field-group">
+                            <label class="cyber-label-sm">Full Identity / Name</label>
+                            <input type="text" name="full_identity" value="{{ ticket.full_identity }}" class="dashboard-input" required>
+                        </div>
+
+                        <div class="form-field-group">
+                            <label class="cyber-label-sm">Contact Relay Phone</label>
+                            <input type="tel" name="phone_number" value="{{ ticket.phone_number }}" placeholder="e.g. +254 700 000000" class="dashboard-input">
+                        </div>
+
+                        <div class="form-field-group">
+                            <label class="cyber-label-sm">Institution / Organization</label>
+                            <input type="text" name="associated_organization" value="{{ ticket.associated_organization }}" placeholder="e.g. Kisii University or Independent" class="dashboard-input">
+                        </div>
+
+                        <div class="form-field-group">
+                            <label class="cyber-label-sm">Architecture Specialization</label>
+                            <input type="text" name="specialization" value="{{ ticket.specialization }}" placeholder="e.g. Frontend, Backend, Full-Stack" class="dashboard-input">
+                        </div>
+
+                        <div class="form-field-group">
+                            <label class="cyber-label-sm">GitHub Repository URL</label>
+                            <input type="url" name="github_link" value="{{ ticket.github_link }}" placeholder="https://github.com/username/project" class="dashboard-input">
+                        </div>
+
+                        <div class="form-field-group">
+                            <label class="cyber-label-sm">Live System Deployment URL</label>
+                            <input type="url" name="live_link" value="{{ ticket.live_link }}" placeholder="https://mysystem.onrender.com" class="dashboard-input">
+                        </div>
+
+                        <div class="form-field-group">
+                            <label class="cyber-label-sm">Project Scope / Bio</label>
+                            <textarea name="collaboration_scope" rows="3" class="dashboard-input">{{ ticket.collaboration_scope }}</textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
+                            <button type="submit" class="btn-primary-glow" style="flex: 1;">Save Profile Changes</button>
+                            <button type="button" class="action-btn-secondary" onclick="toggleEditPanel()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- My Transmissions / Activity Feed -->
+            <section class="neon-card" style="margin-top: 2rem;">
+                <h3 style="color: #9d4edd; font-size: 1.05rem; margin-top: 0; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">
+                    📡 Transmission Dispatch History
+                </h3>
+                {% if user_messages %}
+                    <ul class="transmission-list">
+                        {% for msg in user_messages %}
+                        <li class="transmission-item">
+                            <div class="transmission-meta">
+                                <span class="transmission-badge">DELIVERED</span>
+                                <time style="color: #64748b; font-size: 0.75rem;">{{ msg.received_at|date:"M d, Y · H:i" }}</time>
+                            </div>
+                            <p class="transmission-snippet">{{ msg.message|truncatechars:140 }}</p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p style="color: #64748b; font-size: 0.85rem; margin: 0; line-height: 1.6;">
+                        No messages transmitted yet. Use the <strong>Direct Proposal Dispatch</strong> console on the right to transmit a project collaboration proposal directly to David Osano.
+                    </p>
+                {% endif %}
+            </section>
         </div>
 
-        <!-- COLUMN 2: Developer Diagnostics & Controls -->
-        <div class="neon-card" style="background: rgba(4, 4, 8, 0.9); border: 1px solid rgba(255, 0, 127, 0.25); padding: 2rem; border-radius: 8px; box-shadow: 0 0 30px rgba(255, 0, 127, 0.05);">
-            <h3 style="color: #00f2fe; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(0, 242, 254, 0.2); padding-bottom: 0.5rem; font-size: 1.1rem; letter-spacing: 1px;">
-                [ TELEMETRY & SYSTEM CODES ]
-            </h3>
+        <!-- COLUMN 2: Operations & Command Actions Matrix -->
+        <div class="dashboard-column">
             
-            <div style="margin-bottom: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #64748b; margin-bottom: 0.4rem;">
-                    <span>Database Connection Integrity</span>
-                    <span style="color: #00f2fe;">99.8%</span>
+            <!-- Quick Proposal / Collaboration Dispatch Console -->
+            <section class="neon-card" style="border-color: rgba(0, 242, 254, 0.4);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <h3 style="color: #00f2fe; margin: 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
+                        ⚡ Direct Proposal Dispatch
+                    </h3>
+                    <span style="color: #39ff14; font-size: 0.75rem; font-family: monospace;">● CHANNEL SECURE</span>
                 </div>
-                <div style="height: 6px; background: rgba(0, 242, 254, 0.1); border-radius: 3px; overflow: hidden;">
-                    <div style="width: 99.8%; height: 100%; background: #00f2fe; box-shadow: 0 0 10px #00f2fe;"></div>
-                </div>
-            </div>
+                <p style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6; margin-top: 0; margin-bottom: 1.2rem;">
+                    Send an authenticated collaboration request, project brief, or attachment inquiry directly to David Osano's terminal.
+                </p>
 
-            <div style="margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #64748b; margin-bottom: 0.4rem;">
-                    <span>Security Clearance Level</span>
-                    <span style="color: #ff007f;">LEVEL_03</span>
-                </div>
-                <div style="height: 6px; background: rgba(255, 0, 127, 0.1); border-radius: 3px; overflow: hidden;">
-                    <div style="width: 75%; height: 100%; background: #ff007f; box-shadow: 0 0 10px #ff007f;"></div>
-                </div>
-            </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="send_inquiry">
 
-            <!-- Vault Entrance Controls -->
-            <div style="text-align: center; margin-top: 1rem;">
-                <p style="color: #64748b; font-size: 0.8rem; margin-bottom: 1rem;">Authorize clearance and proceed directly to primary records.</p>
-                <a href="{% url 'vault' %}" class="btn-submit" style="display: block; text-decoration: none; text-align: center; padding: 0.8rem; background: #00f2fe; color: #040408; font-weight: bold; border-radius: 4px; box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 0 25px rgba(0, 242, 254, 0.6)'" onmouseout="this.style.transform='none'; this.style.boxShadow='0 0 15px rgba(0, 242, 254, 0.4)'">
-                    OPEN PRODUCTION VAULT &rarr;
+                    <div class="form-field-group">
+                        <label class="cyber-label-sm">Transmission Subject</label>
+                        <select name="subject" class="dashboard-input">
+                            <option value="Collaboration Proposal">Project Collaboration Proposal</option>
+                            <option value="Industrial Attachment / Job">Industrial Attachment / Job Opportunity</option>
+                            <option value="Code Architecture Review">System Architecture Review</option>
+                            <option value="General Inquiry">General Technical Inquiry</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field-group">
+                        <label class="cyber-label-sm">Proposal Specification & Details</label>
+                        <textarea name="message" rows="4" class="dashboard-input" placeholder="Type your project proposal, role details, or technical inquiry here..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary-glow" style="width: 100%;">
+                        TRANSMIT DIRECT PROPOSAL &rarr;
+                    </button>
+                </form>
+            </section>
+
+            <!-- Production Vault & Document Access -->
+            <section class="neon-card" style="margin-top: 2rem; border-color: rgba(255, 0, 127, 0.35);">
+                <h3 style="color: #ff007f; margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
+                    🔐 Core Terminal Actions
+                </h3>
+                
+                <div class="actions-action-grid">
+                    <a href="{% url 'vault' %}" class="action-tile tile-cyan">
+                        <span class="tile-icon">🚀</span>
+                        <div class="tile-content">
+                            <strong>Production Vault</strong>
+                            <small>Explore {{ works_count|default:"3" }} verified systems</small>
+                        </div>
+                    </a>
+
+                    <a href="{% static 'documents/Odiwuor_David_Osano_CV.pdf' %}" download class="action-tile tile-purple">
+                        <span class="tile-icon">📄</span>
+                        <div class="tile-content">
+                            <strong>Download CV (PDF)</strong>
+                            <small>Verified developer resume</small>
+                        </div>
+                    </a>
+
+                    <a href="https://wa.me/254791209899?text=%E2%9A%A1%20%5BCORE_NODE%5D%20Hello%20David%2C%20I%20am%20connected%20as%20{{ ticket.full_identity|urlencode }}%20(@{{ ticket.username|urlencode }}).%20I%20would%20like%20to%20discuss%20a%20project." target="_blank" rel="noopener noreferrer" class="action-tile tile-green">
+                        <span class="tile-icon">💬</span>
+                        <div class="tile-content">
+                            <strong>WhatsApp Instant Sync</strong>
+                            <small>Pre-filled operator chat</small>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'send_sms' %}" class="action-tile tile-pink">
+                        <span class="tile-icon">📡</span>
+                        <div class="tile-content">
+                            <strong>SMS Relay Channel</strong>
+                            <small>Direct cellular dispatch</small>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Password & Credentials Update -->
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <button type="button" class="action-btn-outline" onclick="togglePasswordPanel()" id="btn-toggle-pwd">
+                        🔒 CHANGE ACCESS PASSWORD
+                    </button>
+                </div>
+
+                <div id="change-pwd-panel" class="collapsible-panel" style="display: none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed rgba(255, 0, 127, 0.3);">
+                    <h4 style="color: #ff007f; margin: 0 0 1rem; font-size: 0.95rem; text-transform: uppercase;">
+                        [ Re-encrypt Access Password ]
+                    </h4>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="change_password">
+
+                        <div class="form-field-group">
+                            <label class="cyber-label-sm">Current Password</label>
+                            <input type="password" name="old_password" class="dashboard-input" required placeholder="••••••••">
+                        </div>
+
+                        <div class="form-field-group">
+                            <label class="cyber-label-sm">New Access Password (min 6 chars)</label>
+                            <input type="password" name="new_password" class="dashboard-input" required placeholder="••••••••">
+                        </div>
+
+                        <div class="form-field-group">
+                            <label class="cyber-label-sm">Confirm New Password</label>
+                            <input type="password" name="confirm_password" class="dashboard-input" required placeholder="••••••••">
+                        </div>
+
+                        <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
+                            <button type="submit" class="btn-primary-glow" style="flex: 1; background: #ff007f; border-color: #ff007f;">Update Password</button>
+                            <button type="button" class="action-btn-secondary" onclick="togglePasswordPanel()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Disconnect Session Node -->
+            <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(6, 6, 12, 0.8); border: 1px solid rgba(255, 0, 127, 0.2); border-radius: 8px;">
+                <span style="color: #64748b; font-size: 0.8rem; font-family: monospace;">STATUS: ENCRYPTED SESSION</span>
+                <a href="{% url 'logout' %}" class="btn-disconnect">
+                    DISCONNECT SESSION &times;
                 </a>
             </div>
+
         </div>
 
     </div>
 
-    <!-- Bottom Actions Footer -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem; font-family: monospace; border-top: 1px solid rgba(100, 116, 139, 0.15); padding-top: 1.5rem;">
-        <span style="color: #64748b; font-size: 0.8rem;">SECURE TERMINAL // PORTFOLIO_ENGINE_V3</span>
-        <a href="{% url 'logout' %}" style="color: #ff007f; text-decoration: none; font-size: 0.9rem; font-weight: bold; transition: text-shadow 0.3s;" onmouseover="this.style.textShadow='0 0 8px #ff007f'" onmouseout="this.style.textShadow='none'">
-            Disconnect Session &times;
-        </a>
-    </div>
 </div>
+
+<script>
+    function toggleEditPanel() {
+        const panel = document.getElementById('edit-profile-panel');
+        const btn = document.getElementById('btn-toggle-edit');
+        if (panel.style.display === 'none' || panel.style.display === '') {
+            panel.style.display = 'block';
+            btn.textContent = '▲ HIDE PROFILE EDIT FORM';
+        } else {
+            panel.style.display = 'none';
+            btn.textContent = '⚙ EDIT NODE PROFILE TELEMETRY';
+        }
+    }
+
+    function togglePasswordPanel() {
+        const panel = document.getElementById('change-pwd-panel');
+        const btn = document.getElementById('btn-toggle-pwd');
+        if (panel.style.display === 'none' || panel.style.display === '') {
+            panel.style.display = 'block';
+            btn.textContent = '▲ HIDE PASSWORD FORM';
+        } else {
+            panel.style.display = 'none';
+            btn.textContent = '🔒 CHANGE ACCESS PASSWORD';
+        }
+    }
+</script>
 {% endblock %}
