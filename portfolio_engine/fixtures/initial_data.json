@@ -1,0 +1,43 @@
+[
+  {
+    "model": "portfolio_engine.productionwork",
+    "pk": 2,
+    "fields": {
+      "title": "Gender-Based Violence (GBV) Reporting System",
+      "sub_title": "A secure, confidential digital platform designed for anonymous reporting, case management, and real-time response coordination.",
+      "architecture_stack": "Python, Django, HTML/CSS, Bootstrap, SQLite",
+      "detailed_scope": "Developed a secure, user-centric web platform to streamline and digitize the reporting and management of gender-based violence (GBV) incidents. \r\n\r\nKey Deliverables:\r\n- Anonymous Reporting Intake: Built safe, low-barrier reporting workflows featuring unique tracking IDs for anonymous status checks and secure follow-ups.\r\n- Secure Case Management: Implemented robust Role-Based Access Control (RBAC) to ensure survivor data remains encrypted and visible only to authorized case managers.\r\n- Rapid Escalation Protocols: Integrated automated case assignment and escalation pathways to trigger quick responses from medical, legal, and security services.\r\n- Data Security & Integrity: Utilized secure relational tables to protect sensitive information, ensuring strict compliance with data privacy standards.",
+      "source_repository": "https://github.com//",
+      "live_deployment": "https://gbv-system.onrender.com/",
+      "completion_date": "2026-06-14",
+      "system_status": "Operational"
+    }
+  },
+  {
+    "model": "portfolio_engine.coreservice",
+    "pk": 1,
+    "fields": {
+      "system_name": "Gender-Based Violence (GBV) Reporting System",
+      "operational_capability": "The Gender-Based Violence (GBV) Reporting System is a secure, user-centric web platform designed to facilitate the safe, confidential, and structured reporting of gender-based violence incidents. It replaces fragmented or manual report tracking with an efficient, digital workflow that connects survivors or witnesses with immediate assistance, security services, and administrative support.",
+      "glowing_accent_color": "#00f2fe"
+    }
+  },
+  {
+    "model": "portfolio_engine.coreservice",
+    "pk": 2,
+    "fields": {
+      "system_name": "Attaches' Management System",
+      "operational_capability": "An Attaches' Management System (often referred to as an Attachment Portal) is a dedicated web platform designed to digitize, coordinate, and streamline the lifecycle of students undertaking industrial attachments or internships.\r\n\r\nIt serves as a centralized hub connecting three key stakeholders: Students (Attaches), Academic/Host Supervisors, and University Administrators.",
+      "glowing_accent_color": "#00f2fe"
+    }
+  },
+  {
+    "model": "portfolio_engine.coreservice",
+    "pk": 3,
+    "fields": {
+      "system_name": "Digital Logbook Management System:",
+      "operational_capability": "The Digital Logbook Management System is a specialized web application designed to digitize, streamline, and manage the student industrial attachment process. Built specifically to meet the portal requirements for students at  Universities (within the School of Information Sciences & Technology), it replaces traditional paper-bound logbooks with a secure, efficient online platform.",
+      "glowing_accent_color": "#00f2fe"
+    }
+  }
+]
