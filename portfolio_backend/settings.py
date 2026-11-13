@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from django.core.exceptions import ImproperlyConfigured
+import dj_database_url
 from django.core.management.utils import get_random_secret_key
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -56,12 +56,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'portfolio_backend.wsgi.application'
 ASGI_APPLICATION = 'portfolio_backend.asgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'production_vault.sqlite3',
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=database_url,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'production_vault.sqlite3',
+        }
+    }
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
