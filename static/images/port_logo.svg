@@ -26,7 +26,7 @@
   <rect width="500" height="500" fill="#0B0E17" rx="250"/>
 
   <!-- CN Monogram Icon Mark -->
-  <g transform="translate(10, -25)">
+  <g transform="translate(10, 15)">
     <!-- Outer 'C' Arch -->
     <path d="M 320 140 A 130 130 0 1 0 320 320" 
           fill="none" 
@@ -50,12 +50,4 @@
     <circle cx="290" cy="310" r="11" fill="#FFFFFF" />
   </g>
 
-  <!-- White-Dominant CORE_NODE Typography -->
-  <text x="250" y="420" 
-        font-family="'Inter', 'Space Grotesk', sans-serif" 
-        font-weight="900" 
-        font-size="40" 
-        fill="url(#white-multicolor)" 
-        text-anchor="middle" 
-        letter-spacing="6">CORE_NODE</text>
 </svg>

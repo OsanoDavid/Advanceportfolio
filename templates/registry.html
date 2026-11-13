@@ -4,6 +4,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+    #main-content { width: 100%; min-width: 0; }
+    #registry-page { width: 100%; min-width: 0; }
     /* Wizard Steps Navigation */
     .step-indicator-container {
         display: flex;
@@ -71,10 +73,20 @@
     }
     .form-step.active {
         display: block;
-        animation: stepFadeIn 0.5s ease forwards;
+        animation: stepFadeIn 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
     @keyframes stepFadeIn {
-        from { opacity: 0; transform: translateY(15px); }
+        from { opacity: 0; transform: translateY(22px); filter: blur(3px); }
+        to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+    .form-step.active .personal-stage-fields > * {
+        animation: fieldReveal 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .form-step.active .personal-stage-fields > *:nth-child(2) { animation-delay: 70ms; }
+    .form-step.active .personal-stage-fields > *:nth-child(3) { animation-delay: 130ms; }
+    .form-step.active .personal-stage-fields > *:nth-child(4) { animation-delay: 190ms; }
+    @keyframes fieldReveal {
+        from { opacity: 0; transform: translateY(12px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
@@ -82,6 +94,65 @@
     .input-group {
         position: relative;
         margin-bottom: 1.5rem;
+    }
+    .personal-stage-layout {
+        display: grid;
+        grid-template-columns: minmax(190px, 0.72fr) minmax(0, 1.8fr);
+        gap: 1.5rem;
+        align-items: start;
+    }
+    .registry-checklist {
+        position: sticky;
+        top: 6rem;
+        padding: 1rem 0.9rem;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 6px;
+        background: rgba(8, 8, 16, 0.75);
+    }
+    .registry-checklist h5 {
+        margin: 0 0 0.9rem;
+        color: #fff;
+        font-size: 0.9rem;
+    }
+    .registry-checklist-list {
+        display: grid;
+        gap: 0.15rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border-left: 2px solid rgba(148, 163, 184, 0.22);
+    }
+    .registry-check-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        min-height: 34px;
+        padding: 0.35rem 0.4rem 0.35rem 0.75rem;
+        color: #ff5265;
+        font-size: 0.78rem;
+        font-weight: 700;
+        transition: color 180ms ease, background 180ms ease;
+    }
+    .registry-check-item .check-mark { flex: 0 0 auto; font-size: 0.9rem; }
+    .registry-check-item.is-complete {
+        color: #00f2fe;
+        animation: dynamicChromaShift 12s linear infinite;
+    }
+    .registry-check-item.is-complete .check-mark { color: #39ff14; }
+    .registry-checklist[data-stage="2"] .registry-check-item.is-complete,
+    .registry-checklist[data-stage="3"] .registry-check-item.is-complete {
+        animation-duration: 18s;
+    }
+    .review-grid { align-content: start; }
+
+    @media (max-width: 760px) {
+        .personal-stage-layout { grid-template-columns: 1fr; }
+        .registry-checklist { position: static; }
+        .registry-checklist-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        #step1 .personal-stage-fields [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+        .review-grid { grid-template-columns: minmax(0, 1fr); }
+        .review-box[style*="grid-column"] { grid-column: 1 / -1 !important; }
     }
     .cyber-label {
         color: #94a3b8; 
@@ -281,7 +352,7 @@
     }
 </style>
 
-<div class="wrapper" style="max-width: 850px; margin: 0 auto; padding: 2rem 1.5rem;">
+<div class="wrapper" id="registry-page" style="max-width: 850px; margin: 0 auto; padding: 2rem 1.5rem;">
     <h2 style="font-size: 2.5rem; text-transform: uppercase; margin-bottom: 0.5rem; text-align: center;">
         Network <span style="color:#ff007f;">Registry</span>
     </h2>
@@ -316,6 +387,21 @@
                 <h4 style="color: #00f2fe; margin-top: 0; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 1px; font-size: 1.1rem;">
                     [ 01 // Personal Records & Security Initialization ]
                 </h4>
+
+                <div class="personal-stage-layout">
+                    <aside class="registry-checklist" aria-labelledby="registry-checklist-title">
+                        <h5 id="registry-checklist-title">Personal Information</h5>
+                        <ul class="registry-checklist-list" aria-live="polite">
+                            <li class="registry-check-item" data-check-item="name"><span>Full Name</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="gender"><span>Gender</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="identity"><span>ID / Passport</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="contact"><span>Contact Info</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="academic"><span>Academic Record</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="organization"><span>Organization</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="credentials"><span>Account Access</span><span class="check-mark" aria-hidden="true"></span></li>
+                        </ul>
+                    </aside>
+                    <div class="personal-stage-fields">
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="input-group">
@@ -400,6 +486,8 @@
                     <label class="cyber-label">Portal System Username</label>
                     <input type="text" name="username" id="id_username" class="cyber-input glow-cyan" required placeholder="Choose a unique username">
                 </div>
+                    </div>
+                </div>
 
                 <div style="text-align: right; margin-top: 2rem;">
                     <button type="button" class="control-btn btn-next" onclick="navigateToStep(2)">Proceed to Step 02 &rarr;</button>
@@ -411,6 +499,18 @@
                 <h4 style="color: #ff007f; margin-top: 0; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 1px; font-size: 1.1rem;">
                     [ 02 // Developer Specializations & Core Architecture Stack ]
                 </h4>
+                <div class="personal-stage-layout">
+                    <aside class="registry-checklist" data-stage="2" aria-labelledby="registry-checklist-step2-title">
+                        <h5 id="registry-checklist-step2-title">Skills & Experience</h5>
+                        <ul class="registry-checklist-list" aria-live="polite">
+                            <li class="registry-check-item" data-check-item="specialization"><span>Specializations</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="languages"><span>Languages</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="styling"><span>Styling Tools</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="systems"><span>Systems Built</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="scope"><span>Project Scope</span><span class="check-mark" aria-hidden="true"></span></li>
+                        </ul>
+                    </aside>
+                    <div class="personal-stage-fields">
 
                 <!-- 1. Specializations -->
                 <label class="cyber-label" style="color: #fff; font-size: 0.9rem;">1. Which architecture paths are you best in? (Choose all that apply)</label>
@@ -536,6 +636,8 @@
                     <label class="cyber-label">Scope Specification / Core Framework Strengths</label>
                     <textarea name="scope" id="id_scope" class="cyber-input glow-pink" rows="4" required placeholder="Describe projects or systems you've worked on (e.g. Spring Boot, Django microservices, GBV system, etc.)..."></textarea>
                 </div>
+                    </div>
+                </div>
 
                 <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
                     <button type="button" class="control-btn btn-prev" onclick="navigateToStep(1)">&larr; Back to Step 01</button>
@@ -548,6 +650,20 @@
                 <h4 style="color: #9d4edd; margin-top: 0; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 1px; font-size: 1.1rem;">
                     [ 03 // System Verification & Handshake Integrity Check ]
                 </h4>
+                <div class="personal-stage-layout">
+                    <aside class="registry-checklist" data-stage="3" aria-labelledby="registry-checklist-step3-title">
+                        <h5 id="registry-checklist-step3-title">Review Status</h5>
+                        <ul class="registry-checklist-list" aria-live="polite">
+                            <li class="registry-check-item" data-check-item="identity"><span>Personal Details</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="credentials"><span>Account Access</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="specialization"><span>Specializations</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="languages"><span>Languages</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="styling"><span>Styling Tools</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="scope"><span>Project Scope</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="systems"><span>Systems Built</span><span class="check-mark" aria-hidden="true"></span></li>
+                        </ul>
+                    </aside>
+                    <div class="personal-stage-fields">
                 <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 2rem;">
                     Review your parameters to execute a clean data insertion pipeline. Any invalid profile metadata can lock node functionality.
                 </p>
@@ -600,6 +716,8 @@
                     <div class="review-box" style="grid-column: span 2; display: none;" id="rev_system_links_box">
                         <h6>Systems Built & Deployed</h6>
                         <p id="rev_system_links">-</p>
+                    </div>
+                </div>
                     </div>
                 </div>
 
@@ -676,14 +794,69 @@
         panel.style.display = show ? "block" : "none";
     }
 
+    function updateRegistryChecklist() {
+        const value = (fieldId) => document.getElementById(fieldId).value.trim();
+        const valid = (fieldId) => {
+            const field = document.getElementById(fieldId);
+            return Boolean(field.value.trim()) && field.checkValidity();
+        };
+        const checkedCount = (selector) => document.querySelectorAll(`${selector}:checked`).length;
+        const password = value('id_password');
+        const organization = document.getElementById('id_org_select').value !== 'Other' || value('id_org_custom').length > 0;
+        const systemChoice = document.querySelector('input[name="has_built_systems"]:checked')?.value;
+        const checksByStage = {
+            1: {
+                name: valid('id_identity'),
+                gender: Boolean(document.querySelector('.gender-radio:checked')),
+                identity: valid('id_number'),
+                contact: valid('id_phone_number') && valid('id_email'),
+                academic: valid('id_reg_number'),
+                organization,
+                credentials: valid('id_username') && password.length > 0 && password === value('id_password_confirm')
+            },
+            2: {
+                specialization: checkedCount('.spec-cb') > 0 && (!document.getElementById('id_spec_other').checked || value('id_spec_custom').length > 0),
+                languages: checkedCount('.lang-cb') > 0 && (!document.getElementById('id_lang_other').checked || value('id_lang_custom').length > 0),
+                styling: checkedCount('.style-cb') > 0 && (!document.getElementById('id_style_other').checked || value('id_style_custom').length > 0),
+                systems: systemChoice === 'No' || (systemChoice === 'Yes' && (valid('id_github_link') || valid('id_live_link'))),
+                scope: valid('id_scope')
+            },
+            3: {
+                identity: valid('id_identity') && valid('id_number') && valid('id_phone_number') && valid('id_reg_number') && valid('id_email') && organization && Boolean(document.querySelector('.gender-radio:checked')),
+                credentials: valid('id_username') && password.length > 0 && password === value('id_password_confirm'),
+                specialization: checkedCount('.spec-cb') > 0 && (!document.getElementById('id_spec_other').checked || value('id_spec_custom').length > 0),
+                languages: checkedCount('.lang-cb') > 0 && (!document.getElementById('id_lang_other').checked || value('id_lang_custom').length > 0),
+                styling: checkedCount('.style-cb') > 0 && (!document.getElementById('id_style_other').checked || value('id_style_custom').length > 0),
+                scope: valid('id_scope'),
+                systems: systemChoice === 'No' || (systemChoice === 'Yes' && (valid('id_github_link') || valid('id_live_link')))
+            }
+        };
+        const activeStep = document.querySelector('.form-step.active');
+        const stepNumber = Number(activeStep?.id.replace('step', '') || 1);
+        const checks = checksByStage[stepNumber];
+
+        activeStep?.querySelectorAll('[data-check-item]').forEach((item) => {
+            const complete = checks[item.dataset.checkItem];
+            item.classList.toggle('is-complete', complete);
+            item.querySelector('.check-mark').textContent = complete ? '\u2713' : '*';
+            item.setAttribute('aria-label', `${item.querySelector('span').textContent}: ${complete ? 'complete' : 'required'}`);
+        });
+    }
+
+    document.querySelectorAll('#registryWizardForm input, #registryWizardForm select, #registryWizardForm textarea').forEach((field) => {
+        field.addEventListener('input', updateRegistryChecklist);
+        field.addEventListener('change', updateRegistryChecklist);
+    });
+    updateRegistryChecklist();
+
     function navigateToStep(stepNumber) {
         // Step 1 Validation Gate
         if (stepNumber === 2) {
-            const requiredFields = ["id_identity", "id_number", "id_phone_number", "id_reg_number", "id_email", "id_username", "id_password", "id_password_confirm"];
+            const requiredFields = ["id_identity", "id_number", "id_phone_number", "id_reg_number", "id_email", "id_org_select", "id_username", "id_password", "id_password_confirm"];
             let isValid = true;
             requiredFields.forEach(fieldId => {
                 const el = document.getElementById(fieldId);
-                if (!el.value.trim()) {
+                if (!el.value.trim() || !el.checkValidity()) {
                     el.style.borderColor = "#ff0055";
                     isValid = false;
                 } else {
@@ -709,6 +882,7 @@
             if (!validatePasswords()) {
                 return;
             }
+            updateRegistryChecklist();
         }
 
         // De-activate all stages
@@ -731,6 +905,7 @@
         // Adjust line progress width
         const progressPercent = ((stepNumber - 1) / 2) * 100;
         document.getElementById('progressBar').style.width = `${progressPercent}%`;
+        updateRegistryChecklist();
     }
 
     function validatePasswords() {

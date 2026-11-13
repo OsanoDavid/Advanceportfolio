@@ -4,12 +4,13 @@
 {% block master_content %}
 <div class="wrapper">
     <!-- Hero Section -->
-    <div class="terminal-hero">
+    <div class="terminal-hero reveal-stagger">
         <div class="hero-header">
             <p
                 style="color: #ff007f; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.5rem;">
                 [ Environment: Production_Node ]</p>
-            <h1>Full-Stack<br><span>Software Developer</span></h1>
+            <p class="personal-name">Odiwuor David Osano</p>
+            <h1 class="personal-title">Frontend-Focused<br><span>Full-Stack Developer</span></h1>
             <p style="color: #94a3b8; font-size: 1.2rem; margin: 1.5rem 0; max-width: 650px; line-height: 1.7;">
                 Welcome to my central deployment hub. This is my definitive engineering portfolio showcasing
                 high-performance enterprise applications, secure relational database architectures, automated pipeline
@@ -20,27 +21,25 @@
                 style="margin-bottom: 2.5rem; padding-left: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
                 <!-- Fully Functional & Clickable SMS Action Protocol -->
                 <div>
-                    <a href="sms:+254791209899"
-                        onclick="navigator.clipboard.writeText('+254791209899'); const span = this.querySelector('.sms-btn-text'); const orig = span.textContent; span.textContent = '✓ Number Copied!'; setTimeout(() => span.textContent = orig, 2500);"
+                    <a href="{% url 'send_sms' %}"
                         style="color: #00f2fe; text-decoration: none; display: inline-flex; align-items: center; padding: 0.6rem 1.2rem; background: rgba(0, 242, 254, 0.08); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 6px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(0, 242, 254, 0.1);"
                         onmouseover="this.style.background='rgba(0, 242, 254, 0.2)'; this.style.borderColor='#00f2fe'; this.style.boxShadow='0 0 15px rgba(0, 242, 254, 0.4)';"
                         onmouseout="this.style.background='rgba(0, 242, 254, 0.08)'; this.style.borderColor='rgba(0, 242, 254, 0.3)'; this.style.boxShadow='0 0 10px rgba(0, 242, 254, 0.1)';">
                         📡 SMS Gateway:&nbsp;<span class="sms-btn-text"
-                            style="color:#ffffff; text-decoration: underline; margin-left: 0.3rem;">+254 791209899 (Send
-                            Message)</span>
+                            style="color:#ffffff; text-decoration: underline; margin-left: 0.3rem;">Send Message</span>
                     </a>
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
                     <span style="color: #9d4edd; font-weight: bold; display: inline-flex; align-items: center;">💻 Code
                         Repositories:</span>
-                    <a href="/login.html" target="_blank"
+                    <a href="https://github.com/OsanoDavid" target="_blank" rel="noopener noreferrer"
                         style="color: #9d4edd; text-decoration: none; display: inline-flex; align-items: center; padding: 0.5rem 1rem; background: rgba(157, 78, 221, 0.08); border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 6px; font-weight: bold; transition: all 0.3s ease;"
                         onmouseover="this.style.background='rgba(157, 78, 221, 0.2)'; this.style.borderColor='#9d4edd'; this.style.boxShadow='0 0 15px rgba(157, 78, 221, 0.4)';"
                         onmouseout="this.style.background='rgba(157, 78, 221, 0.08)'; this.style.borderColor='rgba(157, 78, 221, 0.3)'; this.style.boxShadow='none';">
                         GitHub Workspace
                     </a>
-                    <a href="https://linkedin.com" target="_blank"
+                    <a href="https://www.linkedin.com/in/odiwuor-david-403113290" target="_blank" rel="noopener noreferrer"
                         style="color: #00f2fe; text-decoration: none; display: inline-flex; align-items: center; padding: 0.5rem 1rem; background: rgba(0, 242, 254, 0.08); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 6px; font-weight: bold; transition: all 0.3s ease;"
                         onmouseover="this.style.background='rgba(0, 242, 254, 0.2)'; this.style.borderColor='#00f2fe'; this.style.boxShadow='0 0 15px rgba(0, 242, 254, 0.4)';"
                         onmouseout="this.style.background='rgba(0, 242, 254, 0.08)'; this.style.borderColor='rgba(0, 242, 254, 0.3)'; this.style.boxShadow='none';">

@@ -1,9 +1,17 @@
 import os
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
+from django.core.management.utils import get_random_secret_key
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', '1').lower() in {'1', 'true', 'yes', 'on'}
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        # Keep local development usable without requiring a manually exported key.
+        SECRET_KEY = get_random_secret_key()
+    else:
+        raise ImproperlyConfigured('Set DJANGO_SECRET_KEY when DEBUG is disabled.')
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [

@@ -47,3 +47,16 @@ class NetworkRegistryTicket(models.Model):
 
     def __str__(self):
         return f"Ticket from {self.full_identity} ({self.get_specialization_display()})"
+
+
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=150)
+    email = models.EmailField()
+    message = models.TextField(max_length=5000)
+    received_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-received_at']
+
+    def __str__(self):
+        return f"Message from {self.name} ({self.received_at:%Y-%m-%d})"

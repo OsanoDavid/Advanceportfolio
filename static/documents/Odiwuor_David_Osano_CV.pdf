@@ -1,0 +1,59 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 2221 >>
+stream
+BT
+/F1 20 Tf 1 0 0 1 50 800 Tm (Odiwuor David Osano) Tj
+/F1 12 Tf 1 0 0 1 50 778 Tm (Frontend-Focused Full-Stack Developer) Tj
+/F1 10 Tf 1 0 0 1 50 761 Tm (Phone: +254 791 209 899 | Kisii University, Kenya) Tj
+/F1 13 Tf 1 0 0 1 50 727 Tm (PROFILE) Tj
+/F1 10 Tf 1 0 0 1 50 705 Tm (Frontend-focused full-stack developer building responsive, user-centered web systems.) Tj
+/F1 10 Tf 1 0 0 1 50 688 Tm (Experience across Django, Spring Boot, Laravel, relational data, and cloud deployment.) Tj
+/F1 13 Tf 1 0 0 1 50 654 Tm (EDUCATION) Tj
+/F1 10 Tf 1 0 0 1 50 632 Tm (BSc. in Information Technology - Kisii University \(Fourth Year\)) Tj
+/F1 13 Tf 1 0 0 1 50 598 Tm (EXPERIENCE) Tj
+/F1 10 Tf 1 0 0 1 50 576 Tm (Industrial Attachment - ICT Authority of Kenya, E-Government Department) Tj
+/F1 10 Tf 1 0 0 1 50 559 Tm (May 2026 - August 2026 | Built and deployed the Attachees Management System;) Tj
+/F1 10 Tf 1 0 0 1 50 542 Tm (supported digital workflows for e-government services.) Tj
+/F1 13 Tf 1 0 0 1 50 508 Tm (SELECTED PROJECTS) Tj
+/F1 10 Tf 1 0 0 1 50 486 Tm (SafeReport - GBV reporting experience focused on confidential reporting and) Tj
+/F1 10 Tf 1 0 0 1 50 469 Tm (end-to-end encryption. Presented at GDG DevFest Kisii 2026, Safety & Security.) Tj
+/F1 10 Tf 1 0 0 1 50 452 Tm (Attachees Management System - Role-aware portal for attachment records,) Tj
+/F1 10 Tf 1 0 0 1 50 435 Tm (logbooks, and supervisor workflows.) Tj
+/F1 10 Tf 1 0 0 1 50 418 Tm (SIST Digital Logbook - Java/Spring Boot/Thymeleaf system for Kisii University) Tj
+/F1 10 Tf 1 0 0 1 50 401 Tm (School of Information Sciences & Technology with role-based views.) Tj
+/F1 10 Tf 1 0 0 1 50 384 Tm (Campus Lost & Found - Laravel and PostgreSQL item search and claim workflows,) Tj
+/F1 10 Tf 1 0 0 1 50 367 Tm (deployed on Render.) Tj
+/F1 10 Tf 1 0 0 1 50 350 Tm (IMMMS - Fourth-year capstone project at Kisii University.) Tj
+/F1 13 Tf 1 0 0 1 50 316 Tm (SKILLS) Tj
+/F1 10 Tf 1 0 0 1 50 294 Tm (HTML5, CSS3, Tailwind CSS, JavaScript, Thymeleaf, responsive design, UI/UX;) Tj
+/F1 10 Tf 1 0 0 1 50 277 Tm (Python, Django, Java, Spring Boot, PHP, Laravel; PostgreSQL, MySQL, MariaDB;) Tj
+/F1 10 Tf 1 0 0 1 50 260 Tm (Docker, Render, Koyeb, Git, GitHub.) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2584
+%%EOF

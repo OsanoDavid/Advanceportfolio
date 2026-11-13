@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quantum Software Developer Portfolio Matrix</title>
     <link rel="icon" type="image/svg+xml" href="{% static 'images/port_logo.svg' %}">
-    <link rel="stylesheet" href="{% static 'css/cyberpunk.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cyberpunk.css' %}?v=11">
     <style>
         /* Structural Layout & Sticky Footer Integration */
         body {
@@ -89,7 +89,19 @@
             padding: 1.5rem 5%;
             background: rgba(2, 2, 4, 0.9);
             backdrop-filter: blur(10px);
-            position: relative;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            border-bottom: 1px solid rgba(0, 242, 254, 0.22);
+            box-shadow: 0 8px 26px rgba(0, 0, 0, 0.22);
+            transition: padding 260ms ease, background 260ms ease, box-shadow 260ms ease, border-color 260ms ease;
+        }
+        navbar.is-scrolled {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            background: rgba(2, 2, 4, 0.97);
+            border-bottom-color: rgba(0, 242, 254, 0.48);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.42), 0 1px 14px rgba(0, 242, 254, 0.08);
         }
 
         .nav-grid {
@@ -113,6 +125,22 @@
             transition: transform 0.2s ease;
             display: inline-block;
         }
+
+        .nav-grid a[aria-current="page"] {
+            animation: none;
+            padding: 0.3rem 0.45rem;
+            border-radius: 3px;
+            background: rgba(0, 242, 254, 0.12);
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.85);
+        }
+
+        .nav-grid a[aria-current="page"]::after {
+            height: 4px;
+            background: #00f2fe;
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.85);
+            animation: none;
+        }
         
         .nav-grid a:hover {
             transform: translateY(-2px);
@@ -134,6 +162,213 @@
 
         .nav-grid a:hover::after {
             height: 4px; /* Makes the glowing laser track thicker when you hover over it */
+        }
+
+        .menu-toggle {
+            display: none;
+            min-width: 124px;
+            min-height: 58px;
+            padding: 0.65rem 0.9rem;
+            gap: 0.55rem;
+            border: 2px solid #00f2fe;
+            border-radius: 14px;
+            background: #06060c;
+            color: #00f2fe;
+            box-shadow: inset 0 0 0 4px #06060c, inset 0 0 0 5px #9d4edd, 0 0 16px rgba(0, 242, 254, 0.22);
+            font: bold 1rem 'Courier New', Courier, monospace;
+            cursor: pointer;
+            transition: background 180ms ease, box-shadow 180ms ease, border-color 180ms ease, transform 180ms ease;
+        }
+        .menu-toggle:hover { background: rgba(0, 242, 254, 0.08); transform: translateY(-1px); }
+        .menu-toggle[aria-expanded="true"] { color: #ff007f; border-color: #ff007f; box-shadow: inset 0 0 0 4px #06060c, inset 0 0 0 5px #9d4edd, 0 0 18px rgba(255, 0, 127, 0.3); }
+        .menu-toggle > span:first-child { display: inline-grid; width: 1.2rem; height: 1.2rem; place-items: center; overflow: hidden; font-size: 0; line-height: 1; }
+        .menu-toggle > span:first-child::before { content: '\2630'; font-size: 1.35rem; }
+        .menu-toggle[aria-expanded="true"] > span:first-child::before { content: '\00d7'; font-size: 1.9rem; }
+        .menu-toggle:focus-visible, .nav-grid a:focus-visible, .capability-toggle:focus-visible {
+            outline: 3px solid #00f2fe;
+            outline-offset: 4px;
+        }
+        .skip-link {
+            position: fixed;
+            top: 0.75rem;
+            left: 0.75rem;
+            z-index: 10001;
+            padding: 0.75rem 1rem;
+            transform: translateY(-160%);
+            border: 2px solid #00f2fe;
+            background: #020204;
+            color: #fff;
+        }
+        .skip-link:focus { transform: translateY(0); }
+        .visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
+
+        .accessibility-widget { position: fixed; right: 1rem; bottom: 1rem; z-index: 8100; font-family: 'Courier New', Courier, monospace; }
+        .accessibility-trigger {
+            position: relative; isolation: isolate;
+            display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; min-height: 50px; padding: 0;
+            border: 0; border-radius: 50%;
+            background: #06060c;
+            box-shadow: 0 0 16px rgba(0, 242, 254, 0.18), 0 0 22px rgba(255, 0, 127, 0.12);
+            color: #f8fafc; cursor: pointer;
+        }
+        .accessibility-trigger::before {
+            content: ''; position: absolute; z-index: -1; inset: -3px; border-radius: inherit;
+            background: conic-gradient(from 0deg, #00f2fe, #39ff14, #ff007f, #9d4edd, #00f2fe);
+            animation: accessRingTurn 18s linear infinite;
+        }
+        .accessibility-trigger::after {
+            content: ''; position: absolute; z-index: -1; inset: 1px; border-radius: inherit; background: #06060c;
+        }
+        .accessibility-trigger:hover { box-shadow: 0 0 20px rgba(0, 242, 254, 0.32), 0 0 30px rgba(255, 0, 127, 0.2); }
+        @keyframes accessRingTurn { to { transform: rotate(360deg); } }
+        .accessibility-trigger svg { width: 1.35rem; height: 1.35rem; color: #00f2fe; }
+        #page-shell { width: 100%; min-width: 0; transform: translateX(0) scale(1); transform-origin: left center; transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1); }
+        .accessibility-panel {
+            position: fixed; top: 0.75rem; right: 0.75rem; bottom: 0.75rem; width: min(380px, calc(100vw - 1.5rem)); max-height: none; overflow-y: auto;
+            padding: 1.1rem; border: 1px solid transparent; border-radius: 8px;
+            background: linear-gradient(#080810, #080810) padding-box, linear-gradient(140deg, #00f2fe, #9d4edd, #ff007f) border-box;
+            box-shadow: -18px 0 48px rgba(0, 0, 0, 0.54), 0 0 22px rgba(157, 78, 221, 0.22); color: #f8fafc;
+            opacity: 0; visibility: hidden; pointer-events: none; transform: translateX(calc(100% + 1rem));
+            transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1), opacity 280ms ease, visibility 0s linear 380ms;
+        }
+        .accessibility-panel.is-open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(0); transition-delay: 0s; }
+        @media (min-width: 761px) {
+            .accessibility-panel { width: min(330px, calc(100vw - 380px)); }
+            #page-shell {
+                width: 100%;
+                margin-right: auto;
+                opacity: 0;
+                transform: translateY(16px);
+                transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 1.3s ease, transform 1.3s cubic-bezier(0.22, 1, 0.36, 1);
+            }
+            #page-shell.is-ready { opacity: 1; transform: translateY(0); }
+            body.accessibility-drawer-open #page-shell { width: calc(100% - 360px); transform: translateY(0) scale(0.995); }
+            body.accessibility-drawer-open navbar { padding-right: 5%; padding-left: 5%; }
+            body.accessibility-drawer-open .nav-grid { gap: 1.25rem; }
+        }
+        @media (max-width: 760px) {
+            .accessibility-panel { width: min(330px, calc(100vw - 3rem)); }
+            #page-shell { opacity: 0; transform: translateY(12px); transition: opacity 1.3s ease, transform 1.3s cubic-bezier(0.22, 1, 0.36, 1); }
+            #page-shell.is-ready { opacity: 1; transform: translateY(0); }
+        }
+        .accessibility-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
+        .accessibility-panel h2 { margin: 0; color: #00f2fe; font-size: 1.05rem; text-transform: uppercase; }
+        .accessibility-close {
+            display: grid; flex: 0 0 42px; width: 42px; height: 42px; place-items: center;
+            border: 1px solid rgba(0, 242, 254, 0.38); border-radius: 50%; background: rgba(0, 242, 254, 0.06);
+            color: #f8fafc; font: 400 1.65rem/1 'Courier New', Courier, monospace; cursor: pointer;
+            transition: color 220ms ease, border-color 220ms ease, background 220ms ease, transform 220ms ease;
+        }
+        .accessibility-close:hover { color: #ff007f; border-color: #ff007f; background: rgba(255, 0, 127, 0.1); transform: rotate(90deg); }
+        @media (max-width: 760px) {
+            body.accessibility-drawer-open #page-shell { transform: translateX(-16px) scale(0.992); }
+        }
+        .accessibility-section { padding: 0.75rem 0; border-bottom: 1px solid rgba(157, 78, 221, 0.18); }
+        .accessibility-section-title { margin: 0 0 0.6rem; color: #94a3b8; font-size: 0.72rem; letter-spacing: 0.13em; }
+        .accessibility-section-title span { color: #00f2fe; }
+        .accessibility-setting-row {
+            display: flex; align-items: center; width: 100%; min-height: 52px; gap: 0.65rem; margin: 0.4rem 0; padding: 0.5rem 0.65rem;
+            border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 10px; background: rgba(148, 163, 184, 0.06);
+            color: #e2e8f0; text-align: left; font: 600 0.88rem 'Courier New', Courier, monospace; cursor: pointer;
+        }
+        .setting-icon { display: grid; flex: 0 0 32px; width: 32px; height: 32px; place-items: center; border-radius: 9px; font-size: 1rem; }
+        .setting-icon-moon { background: rgba(157, 78, 221, 0.27); color: #d8b4fe; }
+        .setting-icon-contrast { background: rgba(255, 0, 127, 0.18); color: #ff80bf; }
+        .setting-icon-voice { background: rgba(57, 255, 20, 0.15); color: #8eff76; }
+        .setting-icon-motion { background: rgba(0, 242, 254, 0.14); color: #00f2fe; }
+        .setting-name { flex: 1; }
+        .access-switch { position: relative; flex: 0 0 44px; width: 44px; height: 25px; border: 1px solid #475569; border-radius: 999px; background: #1e293b; transition: background 180ms ease, border-color 180ms ease; }
+        .access-switch::before { content: ''; position: absolute; top: 2px; left: 2px; width: 19px; height: 19px; border-radius: 50%; background: #e2e8f0; box-shadow: 0 1px 4px #000; transition: transform 180ms ease; }
+        .accessibility-setting-row[aria-pressed="true"] .access-switch { border-color: #00f2fe; background: linear-gradient(100deg, #00f2fe, #9d4edd, #ff007f); }
+        .accessibility-setting-row[aria-pressed="true"] .access-switch::before { transform: translateX(19px); background: #fff; }
+        .accessibility-size-control { display: grid; grid-template-columns: 1fr 1.6fr 1fr; align-items: center; gap: 0.5rem; }
+        .accessibility-size-control button, .accessibility-fonts button, .accessibility-reset {
+            min-height: 42px; padding: 0.5rem; border: 1px solid rgba(0, 242, 254, 0.3); border-radius: 7px;
+            background: rgba(0, 242, 254, 0.05); color: #e2e8f0; font: bold 0.82rem 'Courier New', Courier, monospace; cursor: pointer;
+        }
+        .accessibility-size-control button { font-size: 1rem; }
+        .accessibility-size-control button[data-access-setting="default-text"] { color: #d8b4fe; }
+        .accessibility-fonts { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .accessibility-fonts button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem; min-height: 54px; }
+        .accessibility-fonts button small { color: #94a3b8; font-size: 0.65rem; font-weight: normal; }
+        .accessibility-fonts button[aria-pressed="true"] { border-color: #9d4edd; background: rgba(157, 78, 221, 0.25); box-shadow: 0 0 12px rgba(157, 78, 221, 0.2); }
+        .accessibility-fonts [data-access-setting="font-inter"] { font-family: Inter, system-ui, sans-serif; }
+        .accessibility-fonts [data-access-setting="font-opensans"] { font-family: 'Open Sans', Arial, sans-serif; }
+        .accessibility-fonts [data-access-setting="font-lexend"] { font-family: Lexend, 'Trebuchet MS', sans-serif; }
+        .accessibility-fonts [data-access-setting="font-georgia"] { font-family: Georgia, serif; }
+        .accessibility-hint { margin: 0.25rem 0 0.55rem; color: #94a3b8; font-size: 0.76rem; }
+        .accessibility-reset { width: 100%; margin-top: 0.65rem; border-color: rgba(157, 78, 221, 0.7); }
+        .accessibility-trigger:focus-visible, .accessibility-panel button:focus-visible { outline: 3px solid #39ff14; outline-offset: 3px; }
+        html.accessibility-large-text { font-size: 112.5%; }
+        html.accessibility-small-text { font-size: 90%; }
+        html.accessibility-font-inter, html.accessibility-font-inter * { font-family: Inter, system-ui, sans-serif !important; }
+        html.accessibility-font-opensans, html.accessibility-font-opensans * { font-family: 'Open Sans', Arial, sans-serif !important; }
+        html.accessibility-font-lexend, html.accessibility-font-lexend * { font-family: Lexend, 'Trebuchet MS', sans-serif !important; }
+        html.accessibility-font-georgia, html.accessibility-font-georgia * { font-family: Georgia, serif !important; }
+        body.accessibility-high-contrast:not(.accessibility-light-mode) p, body.accessibility-high-contrast:not(.accessibility-light-mode) li, body.accessibility-high-contrast:not(.accessibility-light-mode) label { color: #fff !important; }
+        body.accessibility-high-contrast.accessibility-light-mode p, body.accessibility-high-contrast.accessibility-light-mode li, body.accessibility-high-contrast.accessibility-light-mode label { color: #111827 !important; }
+        body.accessibility-light-mode { background: #f4f7fb !important; color: #172033 !important; }
+        body.accessibility-light-mode p, body.accessibility-light-mode li, body.accessibility-light-mode label { color: #334155 !important; }
+        body.accessibility-light-mode navbar { background: rgba(248, 250, 252, 0.97); }
+        body.accessibility-light-mode footer { background: #e8edf5; }
+        body.accessibility-light-mode #system-loader { background: rgba(244, 247, 251, 0.48); }
+        body.accessibility-light-mode .neon-card, body.accessibility-light-mode .metric-node, body.accessibility-light-mode .skill-group,
+        body.accessibility-light-mode .timeline-card, body.accessibility-light-mode .contact-panel, body.accessibility-light-mode .accessibility-panel { background: #fff; }
+        body.accessibility-light-mode .neon-card h3, body.accessibility-light-mode .timeline-card h3 { color: #172033 !important; }
+        body.accessibility-light-mode .capability-toggle, body.accessibility-light-mode .setting-name { color: #172033; }
+        body.accessibility-light-mode .capability-description, body.accessibility-light-mode .timeline-card p, body.accessibility-light-mode .contact-panel p { color: #334155 !important; }
+        body.accessibility-light-mode .accessibility-panel { color: #172033; }
+        body.accessibility-light-mode .accessibility-panel h2 { color: #6b21a8; }
+        body.accessibility-light-mode .accessibility-setting-row { color: #172033; background: #f1f5f9; }
+        body.accessibility-light-mode .accessibility-size-control button, body.accessibility-light-mode .accessibility-fonts button { background: #f8fafc; color: #172033; }
+        body.accessibility-light-mode .footer-links-list a { color: #334155; }
+        body.accessibility-light-mode .experience-card { background: #fff !important; border-color: rgba(157, 78, 221, 0.5) !important; }
+        body.accessibility-light-mode .contact-form input, body.accessibility-light-mode .contact-form textarea, body.accessibility-light-mode .input-field { background: #fff; color: #172033; }
+        body.accessibility-high-contrast.accessibility-light-mode .accessibility-section-title, body.accessibility-high-contrast.accessibility-light-mode .accessibility-hint,
+        body.accessibility-high-contrast.accessibility-light-mode .accessibility-fonts button small { color: #334155; }
+        body.accessibility-reduce-motion *, body.accessibility-reduce-motion *::before, body.accessibility-reduce-motion *::after {
+            animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important;
+        }
+        @media (max-width: 420px) {
+            .accessibility-widget { right: 0.65rem; bottom: 0.65rem; }
+            .accessibility-trigger { min-height: 44px; padding: 0.55rem 0.7rem; font-size: 0.72rem; }
+            .accessibility-panel { width: min(330px, calc(100vw - 3rem)); }
+        }
+
+        @media (max-width: 760px) {
+            navbar { padding: 0.85rem 5%; flex-wrap: wrap; gap: 0.75rem; }
+            .brand-engine img { height: 44px !important; }
+            .menu-toggle { display: inline-flex; align-items: center; justify-content: center; margin-left: auto; }
+            .nav-grid {
+                display: none;
+                flex: 0 0 100%;
+                flex-direction: column;
+                gap: 0;
+                margin-top: 0.35rem;
+                padding: 0.45rem;
+                border: 1px solid rgba(157, 78, 221, 0.55);
+                border-radius: 8px;
+                background: rgba(6, 6, 12, 0.98);
+                box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), 0 0 14px rgba(157, 78, 221, 0.14);
+            }
+            .nav-grid.is-open { display: flex; animation: navMenuReveal 180ms ease-out both; }
+            .nav-grid li { padding: 0; }
+            .nav-grid a { display: block; padding: 0.9rem 0.75rem; border-radius: 4px; }
+            .nav-grid a:hover, .nav-grid a:focus-visible { background: rgba(0, 242, 254, 0.08); }
+            .nav-grid a::after { bottom: 0.2rem; left: 0.75rem; width: min(calc(100% - 1.5rem), 18rem); }
+            .layout-grid { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+            .wrapper { margin: 2.5rem auto; padding: 0 1rem; }
+            .neon-card { padding: 1.5rem; }
+            footer { padding: 2.5rem 1.25rem 1.5rem; }
+        }
+
+        @keyframes navMenuReveal {
+            from { opacity: 0; transform: translateY(-0.35rem); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
         }
 
         /* Master System Footer Grid Architecture */
@@ -271,36 +506,126 @@
     </style>
 </head>
 <body>
-    <div id="system-loader"><div class="loader-spinner"></div></div>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div id="system-loader" role="status" aria-label="Loading page">
+        <div class="loader-content"><div class="loader-spinner"></div><span class="loader-copy">CORE_NODE / LOADING</span></div>
+    </div>
+    <div class="accessibility-widget">
+        <button class="accessibility-trigger" type="button" aria-expanded="false" aria-controls="accessibility-panel" aria-label="Open accessibility options">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="4.5" r="2"></circle><path d="M4 8.5h16M12 7v5m0 0-4 8m4-8 4 8M8 9l4 3 4-3"></path>
+            </svg>
+        </button>
+        <section class="accessibility-panel" id="accessibility-panel" aria-labelledby="accessibility-title" aria-hidden="true" inert>
+            <header class="accessibility-panel-header">
+                <h2 id="accessibility-title">Display access</h2>
+                <button class="accessibility-close" type="button" data-accessibility-close aria-label="Close accessibility options">&times;</button>
+            </header>
+            <section class="accessibility-section" aria-labelledby="access-vision-title">
+                <h3 id="access-vision-title" class="accessibility-section-title"><span>◉</span> VISION</h3>
+                <button class="accessibility-setting-row" type="button" data-access-setting="dark-mode" aria-pressed="true">
+                    <span class="setting-icon setting-icon-moon" aria-hidden="true">◐</span><span class="setting-name">Dark Mode</span><span class="access-switch" aria-hidden="true"></span>
+                </button>
+                <button class="accessibility-setting-row" type="button" data-access-setting="high-contrast" aria-pressed="false">
+                    <span class="setting-icon setting-icon-contrast" aria-hidden="true">▣</span><span class="setting-name">High Contrast</span><span class="access-switch" aria-hidden="true"></span>
+                </button>
+            </section>
+            <section class="accessibility-section" aria-labelledby="access-size-title">
+                <h3 id="access-size-title" class="accessibility-section-title">AA TEXT SIZE</h3>
+                <div class="accessibility-size-control">
+                    <button type="button" data-access-setting="smaller-text" aria-label="Decrease text size">−</button>
+                    <button type="button" data-access-setting="default-text" aria-label="Reset text size">Default</button>
+                    <button type="button" data-access-setting="larger-text" aria-label="Increase text size">+</button>
+                </div>
+            </section>
+            <section class="accessibility-section" aria-labelledby="access-font-title">
+                <h3 id="access-font-title" class="accessibility-section-title">Aa FONT STYLE</h3>
+                <p class="accessibility-hint">Pick a font that's easier for you to read.</p>
+                <div class="accessibility-fonts">
+                    <button type="button" data-access-setting="font-inter" aria-pressed="false"><strong>Inter</strong><small>Clean / Modern</small></button>
+                    <button type="button" data-access-setting="font-opensans" aria-pressed="false"><strong>Open Sans</strong><small>Friendly / Clear</small></button>
+                    <button type="button" data-access-setting="font-lexend" aria-pressed="false"><strong>Lexend</strong><small>Dyslexia-friendly</small></button>
+                    <button type="button" data-access-setting="font-georgia" aria-pressed="false"><strong>Georgia</strong><small>Warm / Classic</small></button>
+                    <button type="button" data-access-setting="font-theme" aria-pressed="true"><strong>CORE_NODE Mono</strong><small>Theme default</small></button>
+                </div>
+            </section>
+            <section class="accessibility-section" aria-labelledby="access-voice-title">
+                <h3 id="access-voice-title" class="accessibility-section-title">VOICE CONTROL</h3>
+                <button class="accessibility-setting-row" type="button" data-access-setting="voice-assistant" aria-pressed="false">
+                    <span class="setting-icon setting-icon-voice" aria-hidden="true">♫</span><span class="setting-name">Voice Assistant</span><span class="access-switch" aria-hidden="true"></span>
+                </button>
+                <p class="accessibility-hint">Reads selected text aloud while enabled.</p>
+            </section>
+            <section class="accessibility-section">
+                <button class="accessibility-setting-row" type="button" data-access-setting="reduce-motion" aria-pressed="false">
+                    <span class="setting-icon setting-icon-motion" aria-hidden="true">≈</span><span class="setting-name">Reduce Motion</span><span class="access-switch" aria-hidden="true"></span>
+                </button>
+            </section>
+            <div class="accessibility-controls">
+                <button class="accessibility-reset" type="button" data-access-setting="reset">Reset display settings</button>
+            </div>
+            <p id="accessibility-status" role="status" aria-live="polite" class="visually-hidden"></p>
+        </section>
+    </div>
     
-    <navbar>
-    <a href="{% url 'index' %}" class="brand-engine" style="display: flex; align-items: center; text-decoration: none;">
-        <img src="{% static 'images/port_logo.svg' %}" alt="CORE_NODE Logo" style="height: 50px; width: auto; border-radius: 50%; filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.7)); transition: all 0.3s ease;" onmouseover="this.style.filter='drop-shadow(0 0 15px #ff007f)';" onmouseout="this.style.filter='drop-shadow(0 0 10px rgba(0, 242, 254, 0.7))';">
+    <div id="page-shell">
+    <navbar role="navigation" aria-label="Primary navigation">
+    <a href="{% url 'index' %}" class="brand-engine" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+        <img src="{% static 'images/port_logo.svg' %}?v=2" alt="" aria-hidden="true" style="height: 50px; width: auto; border-radius: 50%; filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.7)); transition: all 0.3s ease;" onmouseover="this.style.filter='drop-shadow(0 0 15px #ff007f)';" onmouseout="this.style.filter='drop-shadow(0 0 10px rgba(0, 242, 254, 0.7))';">
+        <span class="brand-wordmark">CORE_NODE</span>
     </a>
-    <ul class="nav-grid">
-        <li><a href="{% url 'index' %}">System Status</a></li>
-        <li><a href="{% url 'capabilities' %}">Capabilities</a></li>
-        <li><a href="{% url 'vault' %}">Production Vault</a></li>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Open navigation menu">
+        <span aria-hidden="true">☰</span><span class="menu-toggle-label">Menu</span>
+    </button>
+    <ul class="nav-grid" id="primary-navigation">
+        <li><a href="{% url 'index' %}" {% if request.resolver_match.url_name == 'index' %}aria-current="page"{% endif %}>System Status</a></li>
+        <li><a href="{% url 'capabilities' %}" {% if request.resolver_match.url_name == 'capabilities' %}aria-current="page"{% endif %}>Capabilities</a></li>
+        <li><a href="{% url 'vault' %}" {% if request.resolver_match.url_name == 'vault' %}aria-current="page"{% endif %}>Production Vault</a></li>
         
         <!-- Clean Dynamic Session Gate (Without Login link) -->
         {% if request.session.ticket_id %}
             <li>
-                <a href="{% url 'dashboard' %}" style="color: #00f2fe; text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);">Dashboard</a>
+                <a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %} style="color: #00f2fe; text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);">Dashboard</a>
             </li>
             <li>
                 <a href="{% url 'logout' %}" style="color: #ff007f; text-shadow: 0 0 10px rgba(255, 0, 127, 0.4);">Disconnect</a>
             </li>
         {% else %}
-            <li><a href="{% url 'registry' %}">Network Registry</a></li>
+            <li><a href="{% url 'login' %}" {% if request.resolver_match.url_name == 'login' %}aria-current="page"{% endif %}>Login</a></li>
+            <li><a href="{% url 'registry' %}" {% if request.resolver_match.url_name == 'registry' %}aria-current="page"{% endif %}>Network Registry</a></li>
         {% endif %}
     </ul>
 </navbar>
 
-    <div class="wrapper">
+    <main class="wrapper" id="main-content" tabindex="-1">
         {% block master_content %}{% endblock %}
-    </div>
+    </main>
 
     <footer>
+        <section class="contact-panel" id="contact" aria-labelledby="contact-title">
+            <div>
+                <h2 id="contact-title" style="color:#00f2fe; text-transform:uppercase;">Open a connection</h2>
+                <p style="color:#94a3b8; line-height:1.7; margin:0.75rem 0 1rem;">Send Odiwuor David Osano a message about a project, role, or collaboration.</p>
+                <a class="interactive-btn" href="tel:+254791209899">Call Now</a>
+            </div>
+            <form class="contact-form" id="contact-form" data-authenticated="{% if request.session.ticket_id %}true{% else %}false{% endif %}" method="post" action="{% url 'contact' %}">
+                {% csrf_token %}
+                <label for="contact-name">Name</label>
+                <input id="contact-name" name="name" autocomplete="name" maxlength="150" required>
+                <label for="contact-email">Email</label>
+                <input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" pattern="[^\s@]+@gmail\.com" title="Enter a valid @gmail.com address." required>
+                <label for="contact-message">Message</label>
+                <textarea id="contact-message" name="message" rows="4" maxlength="5000" required></textarea>
+                <button class="interactive-btn" type="submit">Send Email</button>
+                <p id="contact-form-status" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+        {% if messages %}
+        <div role="status" aria-live="polite" class="status-message">
+            {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+        </div>
+        {% endif %}
+
         <div class="footer-grid-container">
             <!-- Column 1: Core Navigation Shortcuts -->
             <div class="footer-column">
@@ -312,7 +637,7 @@
                     <li><a href="{% url 'registry' %}">// Token Network Registry</a></li>
                 </ul>
             </div>
-            
+
             <!-- Column 2: Authentication & Gateways -->
             <div class="footer-column">
                 <h5>Access Gateways</h5>
@@ -322,7 +647,7 @@
                     <li><a href="/admin/" target="_blank">// Database Management Portal</a></li>
                 </ul>
             </div>
-            
+
             <!-- Column 3: Custom Deployments Showcase Links -->
             <div class="footer-column">
                 <h5>Production Builds</h5>
@@ -332,24 +657,24 @@
                     <li><a href="{% url 'vault' %}">// AI Agricultural Water Quality Engine</a></li>
                 </ul>
             </div>
-            
+
             <!-- Column 4: Cyber Social Links Matrix -->
             <div class="footer-column">
                 <h5>Network Signals</h5>
                 <div class="cyber-social-grid">
-                    <a href="https://wa.me/254700000000" target="_blank" class="social-glow-node node-whatsapp">WhatsApp</a>
-                    <a href="https://t.me/yourusername" target="_blank" class="social-glow-node node-telegram">Telegram</a>
-                    <a href="https://instagram.com" target="_blank" class="social-glow-node node-instagram">Instagram</a>
-                    <a href="https://facebook.com" target="_blank" class="social-glow-node node-facebook">Facebook</a>
-                    <a href="{% url 'registry' %}" target="_blank" class="social-glow-node node-github">GitHub</a>
-                    <a href="https://linkedin.com" target="_blank" class="social-glow-node node-linkedin">LinkedIn</a>
+                    <a href="https://wa.me/254791209899?text=%E2%9A%A1%20%5BCORE_NODE%5D%20Hello%20David%20Osano%2C%20I%20am%20reaching%20out%20from%20your%20portfolio%20website." target="_blank" rel="noopener noreferrer" class="social-glow-node node-whatsapp">WhatsApp</a>
+                    <a href="https://t.me/AndiroNyaNg?text=%E2%9A%A1%20%5BCORE_NODE%5D%20Hello%20David%20Osano%2C%20I%20am%20reaching%20out%20from%20your%20portfolio%20website." target="_blank" rel="noopener noreferrer" class="social-glow-node node-telegram">Telegram</a>
+                    <a href="https://instagram.com/the_osanoz" target="_blank" rel="noopener noreferrer" class="social-glow-node node-instagram">Instagram</a>
+                    <a href="https://www.facebook.com/profile.php?id=100089941699078" target="_blank" rel="noopener noreferrer" class="social-glow-node node-facebook">Facebook</a>
+                    <a href="https://github.com/OsanoDavid" target="_blank" rel="noopener noreferrer" class="social-glow-node node-github">GitHub</a>
+                    <a href="https://www.linkedin.com/in/odiwuor-david-403113290" target="_blank" rel="noopener noreferrer" class="social-glow-node node-linkedin">LinkedIn</a>
                 </div>
             </div>
         </div>
         
         <div class="footer-bottom-bar">
             <div style="text-align: center; margin-bottom: 2rem;">
-                <img src="{% static 'images/port_logo.svg' %}" alt="CORE_NODE Logo" style="height: 120px; width: auto; border-radius: 50%; filter: drop-shadow(0 0 20px rgba(157, 78, 221, 0.7)); opacity: 0.9; transition: all 0.3s ease;" onmouseover="this.style.filter='drop-shadow(0 0 30px #00f2fe)'; this.style.opacity='1';" onmouseout="this.style.filter='drop-shadow(0 0 20px rgba(157, 78, 221, 0.7))'; this.style.opacity='0.9';">
+                <img src="{% static 'images/port_logo.svg' %}?v=2" alt="CORE_NODE monogram" style="height: 120px; width: auto; border-radius: 50%; filter: drop-shadow(0 0 20px rgba(157, 78, 221, 0.7)); opacity: 0.9; transition: all 0.3s ease;" onmouseover="this.style.filter='drop-shadow(0 0 30px #00f2fe)'; this.style.opacity='1';" onmouseout="this.style.filter='drop-shadow(0 0 20px rgba(157, 78, 221, 0.7))'; this.style.opacity='0.9';">
             </div>
             <p>© 2026 Software Engineering Lab. All Rights Reserved.</p>
             <p style="font-size: 0.7rem; margin-top: 0.6rem; color: #334155; letter-spacing: 1px;">
@@ -357,7 +682,8 @@
             </p>
         </div>
     </footer>
+    </div>
 
-    <script src="{% static 'js/engine.js' %}"></script>
+    <script src="{% static 'js/engine.js' %}?v=12"></script>
 </body>
 </html>
