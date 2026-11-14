@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.exceptions import ValidationError
 from django.urls import reverse
@@ -8,14 +10,33 @@ from .models import ContactMessage, ProductionWork, CoreService, NetworkRegistry
 
 
 def portfolio_projects():
+    works = list(ProductionWork.objects.all().order_by('-id'))
     services = list(CoreService.objects.all())
-    work = ProductionWork.objects.filter(title__icontains='Gender-Based Violence').first()
+    
+    projects = []
+    seen_titles = set()
+    
+    # 1. Prioritize user-managed production works from the database
+    for work in works:
+        title_lower = work.title.lower()
+        seen_titles.add(title_lower)
+        tech_list = [t.strip() for t in work.architecture_stack.split(',') if t.strip()]
+        projects.append({
+            'title': work.title,
+            'summary': work.sub_title or work.detailed_scope[:240],
+            'details': work.detailed_scope,
+            'technologies': tech_list or ['Python', 'Django', 'Web System'],
+            'accent': '#00f2fe' if any(w in work.architecture_stack.lower() for w in ['python', 'django']) else '#ff007f',
+            'live_url': work.live_deployment,
+            'repo_url': work.source_repository,
+        })
+        
+    # 2. Add core services if not already represented
     project_map = {
         'gender-based violence': {
             'title': 'SafeReport — GBV Reporting System',
             'summary': 'A confidential reporting experience designed to make incident submission clear and safe. Structured reporting helps teams review cases while protecting sensitive information.',
             'technologies': ['Django', 'Python', 'HTML/CSS', 'End-to-end encryption'],
-            'live_url': work.live_deployment if work else '',
         },
         'attaches': {
             'title': 'Attachees Management System',
@@ -28,21 +49,23 @@ def portfolio_projects():
             'technologies': ['Java', 'Spring Boot', 'Thymeleaf', 'RBAC'],
         },
     }
-    projects = []
     for service in services:
         name = service.system_name.lower()
-        metadata = next((value for key, value in project_map.items() if key in name), {})
-        projects.append({
-            'title': metadata.get('title', service.system_name),
-            'summary': metadata.get('summary', service.operational_capability[:280]),
-            'details': service.operational_capability,
-            'technologies': metadata.get('technologies', []),
-            'accent': service.glowing_accent_color,
-            'live_url': metadata.get('live_url', ''),
-            'repo_url': '',
-        })
-
-    projects.extend([
+        if not any(key in name for key in seen_titles) and not any(name in st for st in seen_titles):
+            metadata = next((value for key, value in project_map.items() if key in name), {})
+            seen_titles.add(name)
+            projects.append({
+                'title': metadata.get('title', service.system_name),
+                'summary': metadata.get('summary', service.operational_capability[:280]),
+                'details': service.operational_capability,
+                'technologies': metadata.get('technologies', ['Python', 'Architecture']),
+                'accent': service.glowing_accent_color,
+                'live_url': '',
+                'repo_url': '',
+            })
+            
+    # 3. Include baseline portfolio applications if not added
+    builtin_projects = [
         {
             'title': 'Horti-Lift',
             'summary': 'A full-stack horticulture application developed during GDG. It pairs a Vite-powered frontend with a Python FastAPI backend and structured database migrations.',
@@ -64,7 +87,11 @@ def portfolio_projects():
             'technologies': ['BSc. IT', 'Kisii University', 'Capstone'],
             'accent': '#ff007f', 'live_url': '', 'repo_url': '',
         },
-    ])
+    ]
+    for p in builtin_projects:
+        if not any(p['title'].lower() in st for st in seen_titles):
+            projects.append(p)
+            
     return projects
 
 def index_view(request):
@@ -232,8 +259,38 @@ def login_view(request):
         login_input = request.POST.get('username', '').strip()
         password_input = request.POST.get('password', '')
         
+        ticket = None
+        # 1. First authenticate with Django User model (supports superusers / staff)
+        auth_user = authenticate(request, username=login_input, password=password_input)
+        if not auth_user and '@' in login_input:
+            try:
+                user_obj = User.objects.get(email=login_input)
+                auth_user = authenticate(request, username=user_obj.username, password=password_input)
+            except (User.DoesNotExist, User.MultipleObjectsReturned):
+                auth_user = None
+
+        if auth_user:
+            login(request, auth_user)
+            ticket, _ = NetworkRegistryTicket.objects.get_or_create(username=auth_user.username)
+            ticket.is_superadmin = auth_user.is_superuser
+            if not ticket.full_identity:
+                ticket.full_identity = auth_user.get_full_name() or auth_user.username
+            if not ticket.secure_email:
+                ticket.secure_email = auth_user.email
+            ticket.save()
+            request.session['ticket_id'] = ticket.id
+            messages.success(request, f"SUPER ADMIN ACCESS: Welcome back to Core Node Terminal, {ticket.full_identity}.")
+            requested_url = request.POST.get('next') or request.GET.get('next', '')
+            if requested_url and url_has_allowed_host_and_scheme(
+                requested_url,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure(),
+            ):
+                return redirect(requested_url)
+            return redirect('dashboard')
+
+        # 2. Authenticate standard NetworkRegistryTicket
         try:
-            # Authenticate via Email or Username
             if '@' in login_input:
                 ticket = NetworkRegistryTicket.objects.get(secure_email=login_input)
             else:
@@ -247,9 +304,7 @@ def login_view(request):
             if not password_matches:
                 raise NetworkRegistryTicket.DoesNotExist
                 
-            # Store the active user's DB primary key in the session
             request.session['ticket_id'] = ticket.id
-            
             messages.success(request, f"ACCESS GRANTED: Connection established for {ticket.full_identity}.")
             requested_url = request.POST.get('next') or request.GET.get('next', '')
             if requested_url and url_has_allowed_host_and_scheme(
@@ -280,6 +335,51 @@ def dashboard_view(request):
         
     if request.method == "POST":
         action = request.POST.get('action')
+
+        # Super Admin Project Deployment Controls
+        if ticket.is_superadmin:
+            if action == 'add_project':
+                title = request.POST.get('title', '').strip()
+                sub_title = request.POST.get('sub_title', '').strip()
+                stack = request.POST.get('stack', '').strip()
+                scope = request.POST.get('detailed_scope', '').strip()
+                live_url = request.POST.get('live_url', '').strip()
+                repo_url = request.POST.get('source_repository', '').strip()
+                status = request.POST.get('system_status', 'Operational').strip()
+                if title:
+                    ProductionWork.objects.create(
+                        title=title,
+                        sub_title=sub_title,
+                        architecture_stack=stack or "Python, Django, Cloud",
+                        detailed_scope=scope or sub_title or "Production deployed application.",
+                        live_deployment=live_url,
+                        source_repository=repo_url,
+                        system_status=status or "Operational",
+                    )
+                    messages.success(request, f"DEPLOYMENT RECORDED: Project '{title}' committed to Production Vault.")
+                    return redirect('dashboard')
+
+            elif action == 'update_project':
+                proj_id = request.POST.get('project_id')
+                work = ProductionWork.objects.filter(pk=proj_id).first()
+                if work:
+                    work.title = request.POST.get('title', work.title).strip()
+                    work.sub_title = request.POST.get('sub_title', work.sub_title).strip()
+                    work.architecture_stack = request.POST.get('stack', work.architecture_stack).strip()
+                    work.live_deployment = request.POST.get('live_url', '').strip()
+                    work.source_repository = request.POST.get('source_repository', '').strip()
+                    work.system_status = request.POST.get('system_status', work.system_status).strip()
+                    work.detailed_scope = request.POST.get('detailed_scope', work.detailed_scope).strip()
+                    work.save()
+                    messages.success(request, f"DEPLOYMENT REFRESHED: Project '{work.title}' updated successfully.")
+                    return redirect('dashboard')
+
+            elif action == 'delete_project':
+                proj_id = request.POST.get('project_id')
+                ProductionWork.objects.filter(pk=proj_id).delete()
+                messages.success(request, "DEPLOYMENT DECOMMISSIONED: Project removed from Production Vault.")
+                return redirect('dashboard')
+
         if action == 'update_profile':
             new_identity = request.POST.get('full_identity', '').strip()
             new_org = request.POST.get('associated_organization', '').strip()
@@ -318,6 +418,13 @@ def dashboard_view(request):
             else:
                 ticket.password = make_password(new_pwd)
                 ticket.save(update_fields=['password'])
+                if ticket.is_superadmin:
+                    try:
+                        u = User.objects.get(username=ticket.username)
+                        u.set_password(new_pwd)
+                        u.save()
+                    except User.DoesNotExist:
+                        pass
                 messages.success(request, "SECURITY PROTOCOL UPDATED: Access credentials successfully changed.")
             return redirect('dashboard')
             
@@ -337,11 +444,18 @@ def dashboard_view(request):
             return redirect('dashboard')
 
     user_messages = ContactMessage.objects.filter(email=ticket.secure_email).order_by('-received_at')[:5]
+    all_projects = ProductionWork.objects.all().order_by('-id') if ticket.is_superadmin else None
+    all_messages = ContactMessage.objects.all().order_by('-received_at')[:10] if ticket.is_superadmin else None
+    all_tickets = NetworkRegistryTicket.objects.all().order_by('-registered_at')[:10] if ticket.is_superadmin else None
+
     context = {
         'ticket': ticket,
         'user_messages': user_messages,
         'works_count': ProductionWork.objects.count(),
         'services_count': CoreService.objects.count(),
+        'all_projects': all_projects,
+        'all_messages': all_messages,
+        'all_tickets': all_tickets,
     }
     return render(request, 'dashboard.html', context)
 

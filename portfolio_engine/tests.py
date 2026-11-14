@@ -2,7 +2,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import ContactMessage, NetworkRegistryTicket
+from .models import ContactMessage, NetworkRegistryTicket, ProductionWork
 
 
 class RegistryAccessTests(TestCase):
@@ -151,3 +151,32 @@ class RegistryAccessTests(TestCase):
         self.assertRedirects(response, reverse('dashboard'), fetch_redirect_response=False)
         ticket.refresh_from_db()
         self.assertTrue(check_password('legacy-password', ticket.password))
+
+    def test_superadmin_can_add_and_update_production_project(self):
+        super_ticket = NetworkRegistryTicket.objects.create(
+            full_identity='Super Admin David',
+            secure_email='super@example.com',
+            username='superdavid',
+            password=make_password('superpass123'),
+            is_superadmin=True,
+        )
+        session = self.client.session
+        session['ticket_id'] = super_ticket.pk
+        session.save()
+
+        # Add project via dashboard
+        response = self.client.post(reverse('dashboard'), {
+            'action': 'add_project',
+            'title': 'Automated Logistics Engine',
+            'sub_title': 'Cloud-native dispatch routing system.',
+            'stack': 'Python, FastAPI, Redis, Render',
+            'live_url': 'https://logistics.onrender.com/',
+            'source_repository': 'https://github.com/OsanoDavid/logistics',
+            'system_status': 'Operational',
+            'detailed_scope': 'End-to-end routing with real-time telemetry.',
+        })
+        self.assertRedirects(response, reverse('dashboard'))
+        self.assertTrue(ProductionWork.objects.filter(title='Automated Logistics Engine').exists())
+
+        work = ProductionWork.objects.get(title='Automated Logistics Engine')
+        self.assertEqual(work.live_deployment, 'https://logistics.onrender.com/')
