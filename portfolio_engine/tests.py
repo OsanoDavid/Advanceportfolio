@@ -49,6 +49,27 @@ class RegistryAccessTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'sms:+254791209899')
 
+    def test_guest_github_request_requires_sign_in(self):
+        response = self.client.get(reverse('github_gateway'))
+
+        self.assertRedirects(
+            response,
+            f"{reverse('login')}?next=%2Fgithub%2F",
+            fetch_redirect_response=False,
+        )
+
+    def test_signed_in_github_request_redirects_to_external_github(self):
+        self.sign_in_contact_user()
+
+        response = self.client.get(reverse('github_gateway'))
+
+        self.assertRedirects(
+            response,
+            'https://github.com/OsanoDavid',
+            fetch_redirect_response=False,
+            target_status_code=302,
+        )
+
     def test_contact_form_rejects_non_gmail_addresses(self):
         self.sign_in_contact_user()
         response = self.client.post(reverse('contact'), {

@@ -666,16 +666,9 @@
                     <a href="https://t.me/AndiroNyaNg?text=%E2%9A%A1%20%5BCORE_NODE%5D%20Hello%20David%20Osano%2C%20I%20am%20reaching%20out%20from%20your%20portfolio%20website." target="_blank" rel="noopener noreferrer" class="social-glow-node node-telegram">Telegram</a>
                     <a href="https://instagram.com/the_osanoz" target="_blank" rel="noopener noreferrer" class="social-glow-node node-instagram">Instagram</a>
                     <a href="https://www.facebook.com/profile.php?id=100089941699078" target="_blank" rel="noopener noreferrer" class="social-glow-node node-facebook">Facebook</a>
-                    <a href="https://github.com/OsanoDavid?tab=repositories" target="_blank" rel="noopener noreferrer" class="social-glow-node node-github" title="Search & Browse Public Repositories (No Login Required)">GitHub</a>
+                    <a href="{% url 'github_gateway' %}" class="social-glow-node node-github" {% if request.session.ticket_id %}target="_blank" rel="noopener noreferrer"{% endif %}>GitHub</a>
                     <a href="https://www.linkedin.com/in/odiwuor-david-403113290" target="_blank" rel="noopener noreferrer" class="social-glow-node node-linkedin">LinkedIn</a>
                 </div>
-
-                <!-- Instant Public GitHub Repository Search (Open to guests before logging in) -->
-                <form action="https://github.com/OsanoDavid" method="get" target="_blank" rel="noopener noreferrer" style="margin-top: 0.9rem; display: flex; gap: 0.35rem;" onsubmit="const q = this.q.value.trim(); if (q) { window.open('https://github.com/OsanoDavid?tab=repositories&q=' + encodeURIComponent(q), '_blank'); return false; } else { window.open('https://github.com/OsanoDavid?tab=repositories', '_blank'); return false; }">
-                    <input type="text" name="q" placeholder="🔍 Search GitHub repos..." style="width: 100%; min-height: 38px; padding: 0.4rem 0.75rem; background: #06060c; border: 1px solid rgba(157, 78, 221, 0.4); border-radius: 4px; color: #ffffff; font-family: 'Courier New', Courier, monospace; font-size: 0.8rem;" title="Search OsanoDavid repositories before logging in">
-                    <button type="submit" style="min-height: 38px; padding: 0.4rem 0.8rem; background: rgba(157, 78, 221, 0.2); border: 1px solid #9d4edd; color: #d8b4fe; border-radius: 4px; font-family: 'Courier New', Courier, monospace; font-size: 0.75rem; font-weight: bold; cursor: pointer; white-space: nowrap;">Find</button>
-                </form>
-                <small style="color: #64748b; font-size: 0.68rem; display: block; margin-top: 0.35rem; font-family: 'Courier New', Courier, monospace;">● Public GitHub repositories — no login required</small>
             </div>
         </div>
         

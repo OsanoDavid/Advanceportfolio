@@ -144,6 +144,14 @@ def send_sms_view(request):
         return redirect(f"{reverse('login')}?{urlencode({'next': reverse('send_sms')})}")
     return render(request, 'send_sms.html')
 
+
+def github_gateway_view(request):
+    ticket_id = request.session.get('ticket_id')
+    if not ticket_id or not NetworkRegistryTicket.objects.filter(pk=ticket_id).exists():
+        messages.info(request, 'Sign in with a registered account before accessing GitHub.')
+        return redirect(f"{reverse('login')}?{urlencode({'next': reverse('github_gateway')})}")
+    return redirect('https://github.com/OsanoDavid')
+
 def registry_view(request):
     if request.method == "POST":
         identity = request.POST.get('identity', '').strip()
