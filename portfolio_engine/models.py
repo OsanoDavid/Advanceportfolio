@@ -50,9 +50,22 @@ class NetworkRegistryTicket(models.Model):
     gender = models.CharField(max_length=30, blank=True, default='')
     github_link = models.URLField(blank=True, default='')
     live_link = models.URLField(blank=True, default='')
+    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+    profile_photo_url = models.URLField(blank=True, default='')
     is_superadmin = models.BooleanField(default=False)
     
     registered_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def avatar_url(self):
+        if self.profile_photo:
+            try:
+                return self.profile_photo.url
+            except Exception:
+                pass
+        if self.profile_photo_url:
+            return self.profile_photo_url
+        return ''
 
     def __str__(self):
         return f"Ticket from {self.full_identity} ({self.get_specialization_display()})"

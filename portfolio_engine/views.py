@@ -332,6 +332,85 @@ def login_view(request):
             
     return render(request, 'login.html')
 
+
+def admin_login_view(request):
+    """
+    Dedicated Root Super Admin Terminal Gateway.
+    Separate from the standard user login page, with enhanced cyber root terminal UI.
+    """
+    if request.method == "POST":
+        login_input = request.POST.get('username', '').strip()
+        password_input = request.POST.get('password', '')
+
+        # Auto-provision super admin if authenticating with master credentials on fresh deployment
+        superadmin_pwd = os.environ.get('DJANGO_SUPERUSER_PASSWORD', '@OsanoAdmin2026!')
+        if login_input.lower() in ['osanodavid', 'admin', 'osanodavid09@gmail.com'] and password_input == superadmin_pwd:
+            if not User.objects.filter(username__in=['OsanoDavid', 'admin'], is_superuser=True).exists():
+                try:
+                    call_command('setup_superadmin')
+                except Exception:
+                    pass
+
+        auth_user = authenticate(request, username=login_input, password=password_input)
+        if not auth_user and '@' in login_input:
+            try:
+                user_obj = User.objects.get(email=login_input)
+                auth_user = authenticate(request, username=user_obj.username, password=password_input)
+            except (User.DoesNotExist, User.MultipleObjectsReturned):
+                auth_user = None
+
+        if auth_user:
+            if not (auth_user.is_superuser or auth_user.is_staff):
+                messages.error(
+                    request,
+                    "CLEARANCE DENIED: Standard user node credentials detected. The Super Admin Terminal requires Root Super Administrator clearance."
+                )
+                return redirect('admin_login')
+
+            login(request, auth_user)
+            ticket, _ = NetworkRegistryTicket.objects.get_or_create(username=auth_user.username)
+            ticket.is_superadmin = True
+            if not ticket.full_identity:
+                ticket.full_identity = auth_user.get_full_name() or auth_user.username
+            if not ticket.secure_email:
+                ticket.secure_email = auth_user.email
+            ticket.save()
+            request.session['ticket_id'] = ticket.id
+            messages.success(request, f"ROOT TERMINAL UNLOCKED: Welcome back, Super Administrator {ticket.full_identity}.")
+            requested_url = request.POST.get('next') or request.GET.get('next', '')
+            if requested_url and url_has_allowed_host_and_scheme(
+                requested_url,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure(),
+            ):
+                return redirect(requested_url)
+            return redirect('dashboard')
+
+        # Check standard NetworkRegistryTicket
+        try:
+            if '@' in login_input:
+                ticket = NetworkRegistryTicket.objects.get(secure_email=login_input)
+            else:
+                ticket = NetworkRegistryTicket.objects.get(username=login_input)
+
+            if bool(password_input) and (check_password(password_input, ticket.password or '') or ticket.password == password_input):
+                if not ticket.is_superadmin:
+                    messages.error(
+                        request,
+                        "ROOT ACCESS RESTRICTED: Standard user accounts cannot unlock the Super Admin Gateway. Please use the Developer User Gateway."
+                    )
+                    return redirect('admin_login')
+                request.session['ticket_id'] = ticket.id
+                messages.success(request, f"SUPER ADMIN ACCESS: Welcome back {ticket.full_identity}.")
+                return redirect('dashboard')
+        except NetworkRegistryTicket.DoesNotExist:
+            pass
+
+        messages.error(request, "ROOT ACCESS REJECTED: Invalid administrator credentials or key handshake failed.")
+        return redirect('admin_login')
+
+    return render(request, 'admin_login.html')
+
 def dashboard_view(request):
     # Retrieve the logged-in ticket ID from the session
     ticket_id = request.session.get('ticket_id')
@@ -399,6 +478,7 @@ def dashboard_view(request):
             new_scope = request.POST.get('collaboration_scope', '').strip()
             new_github = request.POST.get('github_link', '').strip()
             new_live = request.POST.get('live_link', '').strip()
+            remove_photo = request.POST.get('remove_photo') == '1'
             
             if new_identity:
                 ticket.full_identity = new_identity
@@ -411,6 +491,30 @@ def dashboard_view(request):
                 ticket.collaboration_scope = new_scope
             ticket.github_link = new_github
             ticket.live_link = new_live
+
+            # Handle profile photo upload
+            if remove_photo:
+                if ticket.profile_photo:
+                    try:
+                        ticket.profile_photo.delete(save=False)
+                    except Exception:
+                        pass
+                ticket.profile_photo = None
+                ticket.profile_photo_url = ''
+            elif 'profile_photo' in request.FILES:
+                photo = request.FILES['profile_photo']
+                allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+                if photo.content_type in allowed and photo.size <= 5 * 1024 * 1024:
+                    if ticket.profile_photo:
+                        try:
+                            ticket.profile_photo.delete(save=False)
+                        except Exception:
+                            pass
+                    ticket.profile_photo = photo
+                else:
+                    messages.error(request, "UPLOAD ERROR: Use JPG/PNG/WEBP image under 5 MB.")
+                    return redirect('dashboard')
+
             ticket.save()
             messages.success(request, "PROFILE RE-CONFIGURED: Node telemetry and profile data updated successfully.")
             return redirect('dashboard')

@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% block master_content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    @keyframes rootPulse {
+        0%   { text-shadow: 0 0 10px rgba(57,255,20,0.6); }
+        50%  { text-shadow: 0 0 24px rgba(57,255,20,1), 0 0 40px rgba(57,255,20,0.4); }
+        100% { text-shadow: 0 0 10px rgba(57,255,20,0.6); }
+    }
+    @keyframes scanline {
+        0%   { transform: translateY(-100%); }
+        100% { transform: translateY(100vh); }
+    }
+    .root-scanline {
+        position: fixed; top: 0; left: 0; width: 100%; height: 3px;
+        background: linear-gradient(90deg, transparent, rgba(57,255,20,0.6), transparent);
+        animation: scanline 3.5s linear infinite;
+        pointer-events: none; z-index: 9000;
+    }
+    .root-title {
+        font-size: 2.2rem;
+        text-transform: uppercase;
+        text-align: center;
+        color: #39ff14;
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        letter-spacing: 3px;
+        animation: rootPulse 3s infinite ease-in-out;
+        margin-bottom: 0.4rem;
+    }
+    .root-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(57,255,20,0.1);
+        border: 1px solid rgba(57,255,20,0.5);
+        color: #39ff14;
+        font-family: monospace;
+        font-size: 0.72rem;
+        letter-spacing: 2px;
+        padding: 0.3rem 0.8rem;
+        border-radius: 4px;
+        margin-bottom: 2rem;
+    }
+    .input-group { position: relative; margin-bottom: 1.8rem; }
+    .root-label {
+        display: block;
+        color: #39ff14;
+        font-size: 0.75rem;
+        font-family: monospace;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 0.5rem;
+    }
+    .root-input {
+        width: 100%;
+        padding: 0.95rem 1.1rem;
+        background: rgba(0,0,0,0.6);
+        border: 1px solid rgba(57,255,20,0.35);
+        color: #ffffff;
+        font-size: 1rem;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+    .root-input:focus {
+        outline: none;
+        border-color: #39ff14;
+        box-shadow: 0 0 18px rgba(57,255,20,0.45);
+        background: rgba(0,0,0,0.85);
+    }
+    .password-container { position: relative; }
+    .password-toggle-icon {
+        position: absolute; right: 1.1rem; top: 50%;
+        transform: translateY(-50%);
+        color: #64748b; cursor: pointer; font-size: 1.1rem;
+        transition: all 0.3s ease; z-index: 10;
+    }
+    .password-toggle-icon:hover { color: #39ff14; text-shadow: 0 0 10px #39ff14; }
+    .btn-root {
+        width: 100%; padding: 1rem;
+        font-family: 'Courier New', monospace;
+        font-weight: bold; font-size: 0.95rem;
+        text-transform: uppercase; letter-spacing: 2px;
+        border: 2px solid #39ff14; border-radius: 6px; color: #000;
+        background: #39ff14;
+        box-shadow: 0 0 20px rgba(57,255,20,0.5);
+        cursor: pointer; transition: all 0.3s ease;
+    }
+    .btn-root:hover {
+        background: transparent; color: #39ff14;
+        box-shadow: 0 0 32px rgba(57,255,20,0.8);
+        transform: translateY(-1px);
+    }
+    .root-warning {
+        margin-top: 1.5rem;
+        padding: 0.75rem 1rem;
+        background: rgba(57,255,20,0.06);
+        border: 1px solid rgba(57,255,20,0.2);
+        border-radius: 6px;
+        color: #64748b;
+        font-family: monospace;
+        font-size: 0.75rem;
+        text-align: center;
+        line-height: 1.6;
+    }
+</style>
+
+<div class="root-scanline"></div>
+
+<div class="wrapper" style="max-width: 480px; margin: 3.5rem auto; padding: 1.5rem;">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 70px; height: 70px; border-radius: 50%; background: rgba(57,255,20,0.1); border: 2px solid #39ff14; box-shadow: 0 0 24px rgba(57,255,20,0.4); font-size: 2rem; margin-bottom: 1rem;">
+            👑
+        </div>
+        <h2 class="root-title">Root Terminal</h2>
+        <span class="root-badge">⬡ SUPER ADMIN GATEWAY // CLEARANCE REQUIRED</span>
+    </div>
+
+    {% if messages %}
+    <div class="dashboard-messages-area" style="margin-bottom: 1.5rem;">
+        {% for message in messages %}
+        <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="6000">
+            <span class="cyber-alert-tag">[ ROOT TERMINAL ]</span>
+            <span class="cyber-alert-content">{{ message }}</span>
+            <button type="button" class="cyber-alert-close" aria-label="Dismiss">&times;</button>
+            <div class="cyber-alert-progress"><div class="cyber-alert-progress-fill" style="background:#39ff14; box-shadow: 0 0 8px #39ff14;"></div></div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div style="background: rgba(2,2,8,0.95); border: 1px solid rgba(57,255,20,0.3); border-radius: 10px; padding: 2.5rem; box-shadow: 0 0 40px rgba(57,255,20,0.08);">
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next|default:'' }}">
+
+            <div class="input-group">
+                <label class="root-label">Admin Username or Email</label>
+                <input type="text" name="username" class="root-input" required placeholder="Enter admin identifier" autocomplete="username">
+            </div>
+
+            <div class="input-group" style="margin-bottom: 2rem;">
+                <label class="root-label">Root Access Keyphrase</label>
+                <div class="password-container">
+                    <input type="password" name="password" id="rootPwd" class="root-input" required placeholder="••••••••••••" autocomplete="current-password">
+                    <i class="fa-solid fa-eye password-toggle-icon" id="rootEye" onclick="togglePwd()"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-root">⚡ UNLOCK ROOT TERMINAL &rarr;</button>
+        </form>
+
+        <div class="root-warning">
+            <strong style="color:#39ff14;">⚠ RESTRICTED ACCESS NODE</strong><br>
+            This terminal is reserved exclusively for Super Administrators.<br>
+            Unauthorized access attempts are logged and may result in account suspension.<br>
+            Standard users: use the <a href="{% url 'login' %}" style="color:#00f2fe;">Developer Gateway</a> instead.
+        </div>
+    </div>
+
+    <p style="text-align:center; margin-top:2rem; color:#334155; font-family: monospace; font-size:0.8rem;">
+        Not an administrator? &nbsp;
+        <a href="{% url 'login' %}" style="color:#00f2fe; text-decoration:none;">Developer User Login &rarr;</a>
+    </p>
+</div>
+
+<script>
+    function togglePwd() {
+        const f = document.getElementById('rootPwd');
+        const e = document.getElementById('rootEye');
+        if (f.type === 'password') {
+            f.type = 'text';
+            e.classList.replace('fa-eye','fa-eye-slash');
+        } else {
+            f.type = 'password';
+            e.classList.replace('fa-eye-slash','fa-eye');
+        }
+    }
+</script>
+{% endblock %}

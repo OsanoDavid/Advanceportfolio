@@ -10,8 +10,10 @@ urlpatterns = [
     path('github/', views.github_gateway_view, name='github_gateway'),
     path('registry/', views.registry_view, name='registry'),
     path('login/', views.login_view, name='login'),
-    
+    path('root-terminal/', views.admin_login_view, name='admin_login'),
+
     # New connection endpoints
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('logout/', views.logout_view, name='logout'),
 ]
+

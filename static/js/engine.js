@@ -333,11 +333,38 @@ window.addEventListener('DOMContentLoaded', () => {
     const profileBtn = document.getElementById('navProfileTrigger');
     const profileMenu = document.getElementById('navProfileMenu');
     if (profileBtn && profileMenu) {
+        const scrollWrap = document.getElementById('navDropdownScrollWrap');
+        const arrowHint = document.getElementById('navScrollArrowHint');
+
+        const updateScrollHint = () => {
+            if (!scrollWrap || !arrowHint) return;
+            const canScroll = scrollWrap.scrollHeight > scrollWrap.clientHeight;
+            const atBottom = Math.ceil(scrollWrap.scrollTop + scrollWrap.clientHeight) >= scrollWrap.scrollHeight - 8;
+            if (canScroll && !atBottom) {
+                arrowHint.style.display = 'block';
+            } else {
+                arrowHint.style.display = 'none';
+            }
+        };
+
+        if (scrollWrap) {
+            scrollWrap.addEventListener('scroll', updateScrollHint, { passive: true });
+        }
+
+        window.scrollNavDropdownDown = () => {
+            if (scrollWrap) {
+                scrollWrap.scrollBy({ top: 90, behavior: 'smooth' });
+            }
+        };
+
         const toggleProfileMenu = (open) => {
             const isCurrentlyOpen = profileBtn.getAttribute('aria-expanded') === 'true';
             const shouldOpen = open !== undefined ? open : !isCurrentlyOpen;
             profileBtn.setAttribute('aria-expanded', String(shouldOpen));
             profileMenu.classList.toggle('is-open', shouldOpen);
+            if (shouldOpen) {
+                setTimeout(updateScrollHint, 60);
+            }
         };
 
         profileBtn.addEventListener('click', (e) => {

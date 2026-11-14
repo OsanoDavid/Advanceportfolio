@@ -200,7 +200,7 @@ class RegistryAccessTests(TestCase):
         self.assertIn('navProfileTrigger', content)
         self.assertIn('EL', content)
         self.assertIn('Elizabeth', content)
-        self.assertIn('Edit Profile Telemetry', content)
+        self.assertIn('Edit Profile', content)
         self.assertIn('Disconnect / Sign Out', content)
 
     def test_superadmin_auto_provisioning_on_master_login(self):
@@ -215,3 +215,34 @@ class RegistryAccessTests(TestCase):
         self.assertRedirects(response, reverse('dashboard'), fetch_redirect_response=False)
         self.assertTrue(User.objects.filter(username='OsanoDavid', is_superuser=True).exists())
         self.assertTrue(NetworkRegistryTicket.objects.filter(username='OsanoDavid', is_superadmin=True).exists())
+
+    def test_admin_login_gateway_clearance(self):
+        # Regular user denied on admin login root terminal
+        reg_ticket = NetworkRegistryTicket.objects.create(
+            full_identity='Standard User',
+            username='stduser',
+            secure_email='stduser@example.com',
+            password=make_password('pass1234'),
+            specialization='Frontend Engineer',
+            is_superadmin=False,
+        )
+        response = self.client.post(reverse('admin_login'), {
+            'username': 'stduser',
+            'password': 'pass1234',
+        })
+        self.assertRedirects(response, reverse('admin_login'))
+
+        # Superadmin allowed
+        admin_user = User.objects.create_superuser('adminboss', 'adminboss@example.com', 'bossPass123!')
+        admin_ticket = NetworkRegistryTicket.objects.create(
+            full_identity='Admin Boss',
+            username='adminboss',
+            secure_email='adminboss@example.com',
+            password=make_password('bossPass123!'),
+            is_superadmin=True,
+        )
+        response = self.client.post(reverse('admin_login'), {
+            'username': 'adminboss',
+            'password': 'bossPass123!',
+        })
+        self.assertRedirects(response, reverse('dashboard'))

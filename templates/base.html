@@ -381,6 +381,14 @@
         .nav-profile-container::after {
             display: none !important;
         }
+        @keyframes dynamicNavProfileBtnGlow {
+            0%, 20%  { border-color: rgba(0, 242, 254, 0.65); box-shadow: 0 0 14px rgba(0, 242, 254, 0.35); }
+            25%, 40% { border-color: rgba(255, 0, 127, 0.65); box-shadow: 0 0 14px rgba(255, 0, 127, 0.35); }
+            45%, 60% { border-color: rgba(157, 78, 221, 0.65); box-shadow: 0 0 14px rgba(157, 78, 221, 0.35); }
+            65%, 80% { border-color: rgba(57, 255, 20, 0.65); box-shadow: 0 0 14px rgba(57, 255, 20, 0.35); }
+            85%, 95% { border-color: rgba(255, 0, 85, 0.65); box-shadow: 0 0 14px rgba(255, 0, 85, 0.35); }
+            100%     { border-color: rgba(0, 242, 254, 0.65); box-shadow: 0 0 14px rgba(0, 242, 254, 0.35); }
+        }
         .nav-profile-btn {
             display: inline-flex;
             align-items: center;
@@ -395,21 +403,19 @@
             cursor: pointer;
             box-shadow: 0 0 12px rgba(0, 242, 254, 0.15);
             transition: all 0.25s ease;
+            animation: dynamicNavProfileBtnGlow 75s linear infinite;
         }
         .nav-profile-btn:hover,
         .nav-profile-btn[aria-expanded="true"] {
-            border-color: #00f2fe;
-            background: rgba(0, 242, 254, 0.12);
-            box-shadow: 0 0 18px rgba(0, 242, 254, 0.35);
+            filter: brightness(1.2);
+            background: rgba(10, 10, 24, 0.95);
         }
         .nav-profile-btn.superadmin-mode {
-            border-color: rgba(57, 255, 20, 0.55);
-            box-shadow: 0 0 12px rgba(57, 255, 20, 0.2);
+            animation: dynamicNavProfileBtnGlow 75s linear infinite;
         }
         .nav-profile-btn.superadmin-mode:hover,
         .nav-profile-btn.superadmin-mode[aria-expanded="true"] {
-            border-color: #39ff14;
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.45);
+            filter: brightness(1.25);
         }
         .nav-avatar {
             position: relative;
@@ -426,11 +432,24 @@
             font-family: 'Courier New', Courier, monospace;
             box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
             flex-shrink: 0;
+            overflow: hidden;
+            /* Syncs border colour with the global nav chroma animation */
+            animation: dynamicAvatarGlow 75s linear infinite;
+        }
+        @keyframes dynamicAvatarGlow {
+            0%,  20% { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0,242,254,0.4); color: #00f2fe; }
+            25%, 40% { border-color: #ff007f; box-shadow: 0 0 10px rgba(255,0,127,0.4); color: #ff007f; }
+            45%, 60% { border-color: #9d4edd; box-shadow: 0 0 10px rgba(157,78,221,0.4); color: #9d4edd; }
+            65%, 80% { border-color: #39ff14; box-shadow: 0 0 10px rgba(57,255,20,0.4);  color: #39ff14; }
+            85%, 95% { border-color: #ff0055; box-shadow: 0 0 10px rgba(255,0,85,0.4);   color: #ff0055; }
+            100%      { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0,242,254,0.4); color: #00f2fe; }
         }
         .nav-avatar.superadmin-ring {
-            border-color: #39ff14;
-            color: #39ff14;
-            box-shadow: 0 0 12px rgba(57, 255, 20, 0.45);
+            animation: dynamicAvatarGlow 75s linear infinite;
+        }
+        .nav-avatar img {
+            width: 100%; height: 100%; object-fit: cover;
+            border-radius: 50%;
         }
         .nav-avatar.large {
             width: 46px;
@@ -456,12 +475,14 @@
             color: #f1f5f9;
             font-weight: bold;
             letter-spacing: 0.5px;
+            animation: dynamicChromaShift 75s linear infinite;
         }
         .nav-caret {
             font-size: 0.75rem;
             color: #00f2fe;
             transition: transform 0.25s ease;
             line-height: 1;
+            animation: dynamicChromaShift 75s linear infinite;
         }
         .nav-profile-btn[aria-expanded="true"] .nav-caret {
             transform: rotate(180deg);
@@ -484,6 +505,51 @@
             transform: translateY(-8px);
             transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: none;
+            /* Keep dropdown within view */
+            max-height: calc(100vh - 90px);
+            display: flex;
+            flex-direction: column;
+        }
+        .nav-dropdown-scroll-wrap {
+            max-height: 230px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 242, 254, 0.4) transparent;
+            scroll-behavior: smooth;
+        }
+        .nav-dropdown-scroll-wrap::-webkit-scrollbar {
+            width: 4px;
+        }
+        .nav-dropdown-scroll-wrap::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .nav-dropdown-scroll-wrap::-webkit-scrollbar-thumb {
+            background: rgba(0, 242, 254, 0.4);
+            border-radius: 4px;
+        }
+        .nav-scroll-arrow-hint {
+            display: none;
+            width: 100%;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(6, 6, 14, 0.2), rgba(6, 6, 14, 0.98) 70%);
+            border: none;
+            color: #00f2fe;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.68rem;
+            letter-spacing: 1.5px;
+            padding: 0.45rem 0 0.2rem;
+            cursor: pointer;
+            position: sticky;
+            bottom: 0;
+            animation: bounceArrow 1.6s infinite ease-in-out;
+            transition: opacity 0.25s ease;
+            z-index: 5;
+        }
+        @keyframes bounceArrow {
+            0%, 100% { transform: translateY(0); color: #00f2fe; }
+            50%      { transform: translateY(3px); color: #ff007f; }
         }
         .nav-dropdown-drawer.is-open {
             opacity: 1;
@@ -865,17 +931,25 @@
             <li class="nav-profile-container">
                 <button type="button" class="nav-profile-btn {% if active_ticket.is_superadmin %}superadmin-mode{% endif %}" id="navProfileTrigger" aria-expanded="false" aria-haspopup="true" aria-label="User profile and system control menu">
                     <span class="nav-avatar {% if active_ticket.is_superadmin %}superadmin-ring{% endif %}">
-                        {{ active_ticket.full_identity|slice:":2"|upper|default:"ID" }}
+                        {% if active_ticket.avatar_url %}
+                            <img src="{{ active_ticket.avatar_url }}" alt="{{ active_ticket.full_identity|slice:':2'|upper }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        {% else %}
+                            {{ active_ticket.full_identity|slice:":2"|upper|default:"ID" }}
+                        {% endif %}
                         <span class="nav-avatar-online" title="Node Online"></span>
                     </span>
-                    <span class="nav-user-label">{{ active_ticket.username|default:"Operator" }}</span>
+                    <span class="nav-user-label">{% if active_ticket.is_superadmin %}👑 {% endif %}{{ active_ticket.username|default:"Operator" }}</span>
                     <span class="nav-caret" aria-hidden="true">&#9662;</span>
                 </button>
 
                 <div class="nav-dropdown-drawer" id="navProfileMenu" role="menu" aria-label="Profile options">
                     <div class="nav-dropdown-hero">
                         <div class="nav-avatar large {% if active_ticket.is_superadmin %}superadmin-ring{% endif %}">
-                            {{ active_ticket.full_identity|slice:":2"|upper|default:"ID" }}
+                            {% if active_ticket.avatar_url %}
+                                <img src="{{ active_ticket.avatar_url }}" alt="{{ active_ticket.full_identity|slice:':2'|upper }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                            {% else %}
+                                {{ active_ticket.full_identity|slice:":2"|upper|default:"ID" }}
+                            {% endif %}
                             <span class="nav-avatar-online"></span>
                         </div>
                         <div class="nav-hero-meta">
@@ -891,55 +965,62 @@
 
                     <div class="nav-dropdown-divider"></div>
 
-                    <ul class="nav-dropdown-list">
-                        <li>
-                            <a href="{% url 'dashboard' %}?edit=profile#edit-profile-panel" class="nav-dropdown-item" role="menuitem">
-                                <span class="nav-item-icon">⚙</span>
-                                <div class="nav-item-copy">
-                                    <strong>Edit Profile Telemetry</strong>
-                                    <small>Update identity, bio, contact and links</small>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'dashboard' %}" class="nav-dropdown-item" role="menuitem">
-                                <span class="nav-item-icon">📊</span>
-                                <div class="nav-item-copy">
-                                    <strong>Developer Dashboard</strong>
-                                    <small>Node telemetry, credentials, relays</small>
-                                </div>
-                            </a>
-                        </li>
-                        {% if active_ticket.is_superadmin %}
-                        <li>
-                            <a href="{% url 'dashboard' %}?action=deploy#new-project-panel" class="nav-dropdown-item item-superadmin" role="menuitem">
-                                <span class="nav-item-icon">🚀</span>
-                                <div class="nav-item-copy">
-                                    <strong>Deploy New Project</strong>
-                                    <small>Register live URL & code vault</small>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/admin/" target="_blank" class="nav-dropdown-item item-superadmin" role="menuitem">
-                                <span class="nav-item-icon">🗄</span>
-                                <div class="nav-item-copy">
-                                    <strong>Django Admin Portal</strong>
-                                    <small>Full root database console (/admin/)</small>
-                                </div>
-                            </a>
-                        </li>
-                        {% endif %}
-                        <li>
-                            <a href="{% url 'dashboard' %}#security-settings" class="nav-dropdown-item" role="menuitem">
-                                <span class="nav-item-icon">🔒</span>
-                                <div class="nav-item-copy">
-                                    <strong>Security & Password</strong>
-                                    <small>Rotate access credentials</small>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
+                    <!-- Scrollable options container with arrow hint -->
+                    <div class="nav-dropdown-scroll-wrap" id="navDropdownScrollWrap">
+                        <ul class="nav-dropdown-list" id="navDropdownList">
+                            <li>
+                                <a href="{% url 'dashboard' %}?edit=profile#edit-profile-panel" class="nav-dropdown-item" role="menuitem">
+                                    <span class="nav-item-icon">⚙</span>
+                                    <div class="nav-item-copy">
+                                        <strong>Edit Profile &amp; Photo</strong>
+                                        <small>Update identity, photo, bio &amp; links</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'dashboard' %}" class="nav-dropdown-item" role="menuitem">
+                                    <span class="nav-item-icon">📊</span>
+                                    <div class="nav-item-copy">
+                                        <strong>Developer Dashboard</strong>
+                                        <small>Node telemetry, credentials, relays</small>
+                                    </div>
+                                </a>
+                            </li>
+                            {% if active_ticket.is_superadmin %}
+                            <li>
+                                <a href="{% url 'dashboard' %}?action=deploy#new-project-panel" class="nav-dropdown-item item-superadmin" role="menuitem">
+                                    <span class="nav-item-icon">🚀</span>
+                                    <div class="nav-item-copy">
+                                        <strong>Deploy New Project</strong>
+                                        <small>Register live URL &amp; code vault</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/admin/" target="_blank" class="nav-dropdown-item item-superadmin" role="menuitem">
+                                    <span class="nav-item-icon">🗄</span>
+                                    <div class="nav-item-copy">
+                                        <strong>Django Admin Portal</strong>
+                                        <small>Full root database console (/admin/)</small>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li>
+                                <a href="{% url 'dashboard' %}#security-settings" class="nav-dropdown-item" role="menuitem">
+                                    <span class="nav-item-icon">🔒</span>
+                                    <div class="nav-item-copy">
+                                        <strong>Security &amp; Password</strong>
+                                        <small>Rotate access credentials</small>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                        <!-- Down arrow scroll hint -->
+                        <button type="button" class="nav-scroll-arrow-hint" id="navScrollArrowHint" aria-label="Scroll down for more options" onclick="scrollNavDropdownDown()">
+                            <span>▾ SCROLL FOR MORE OPTIONS ▾</span>
+                        </button>
+                    </div>
 
                     <div class="nav-dropdown-divider"></div>
 
@@ -1010,8 +1091,9 @@
             <div class="footer-column">
                 <h5>Access Gateways</h5>
                 <ul class="footer-links-list">
-                    <li><a href="/admin/login/">// Core Admin Terminal Logins</a></li>
+                    <li><a href="{% url 'login' %}">// Developer User Login</a></li>
                     <li><a href="{% url 'registry' %}">// Register Collaboration Identity</a></li>
+                    <li><a href="{% url 'admin_login' %}">// 👑 Super Admin Root Terminal</a></li>
                     <li><a href="/admin/" target="_blank">// Database Management Portal</a></li>
                 </ul>
             </div>
