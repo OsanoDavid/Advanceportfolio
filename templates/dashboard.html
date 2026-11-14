@@ -18,13 +18,15 @@
         </p>
     </header>
 
-    <!-- Feedback messages -->
+    <!-- Feedback messages with Smooth Auto-Dismiss Countdown -->
     {% if messages %}
     <div class="dashboard-messages-area" role="alert">
         {% for message in messages %}
-        <div class="cyber-alert-box {% if message.tags %}{{ message.tags }}{% endif %}">
+        <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="5500">
             <span class="cyber-alert-tag">[ SYSTEM NOTIFICATION ]</span>
-            <span>{{ message }}</span>
+            <span class="cyber-alert-content">{{ message }}</span>
+            <button type="button" class="cyber-alert-close" aria-label="Dismiss notification">&times;</button>
+            <div class="cyber-alert-progress"><div class="cyber-alert-progress-fill"></div></div>
         </div>
         {% endfor %}
     </div>
@@ -469,7 +471,7 @@
                 </div>
 
                 <!-- Password & Credentials Update -->
-                <div style="margin-top: 1.5rem; text-align: center;">
+                <div id="security-settings" style="margin-top: 1.5rem; text-align: center;">
                     <button type="button" class="action-btn-outline" onclick="togglePasswordPanel()" id="btn-toggle-pwd">
                         🔒 CHANGE ACCESS PASSWORD
                     </button>
@@ -563,5 +565,45 @@
             btn.textContent = '🔒 CHANGE ACCESS PASSWORD';
         }
     }
+
+    // Auto-open requested panel when navigating via top navbar dropdown links
+    document.addEventListener('DOMContentLoaded', function() {
+        const params = new URLSearchParams(window.location.search);
+        const hash = window.location.hash;
+
+        if (params.get('edit') === 'profile' || hash === '#edit-profile-panel') {
+            const panel = document.getElementById('edit-profile-panel');
+            const btn = document.getElementById('btn-toggle-edit');
+            if (panel) {
+                panel.style.display = 'block';
+                if (btn) btn.textContent = '▲ HIDE PROFILE EDIT FORM';
+                setTimeout(function() {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    panel.style.boxShadow = '0 0 35px rgba(0, 242, 254, 0.45)';
+                    panel.style.borderColor = '#00f2fe';
+                }, 200);
+            }
+        } else if (params.get('action') === 'deploy' || hash === '#new-project-panel') {
+            const panel = document.getElementById('new-project-panel');
+            const btn = document.getElementById('btn-toggle-new-proj');
+            if (panel) {
+                panel.style.display = 'block';
+                if (btn) btn.textContent = '▲ CANCEL / HIDE DEPLOYMENT FORM';
+                setTimeout(function() {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 200);
+            }
+        } else if (hash === '#security-settings' || hash === '#change-pwd-panel') {
+            const panel = document.getElementById('change-pwd-panel');
+            const btn = document.getElementById('btn-toggle-pwd');
+            if (panel) {
+                panel.style.display = 'block';
+                if (btn) btn.textContent = '▲ HIDE PASSWORD FORM';
+                setTimeout(function() {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 200);
+            }
+        }
+    });
 </script>
 {% endblock %}

@@ -326,4 +326,82 @@ window.addEventListener('DOMContentLoaded', () => {
             animateAccordion(details, true);
         });
     });
+
+    // -------------------------------------------------------------
+    // Universal Top Navbar Profile Dropdown Controller
+    // -------------------------------------------------------------
+    const profileBtn = document.getElementById('navProfileTrigger');
+    const profileMenu = document.getElementById('navProfileMenu');
+    if (profileBtn && profileMenu) {
+        const toggleProfileMenu = (open) => {
+            const isCurrentlyOpen = profileBtn.getAttribute('aria-expanded') === 'true';
+            const shouldOpen = open !== undefined ? open : !isCurrentlyOpen;
+            profileBtn.setAttribute('aria-expanded', String(shouldOpen));
+            profileMenu.classList.toggle('is-open', shouldOpen);
+        };
+
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleProfileMenu();
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
+                toggleProfileMenu(false);
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && profileBtn.getAttribute('aria-expanded') === 'true') {
+                toggleProfileMenu(false);
+                profileBtn.focus();
+            }
+        });
+    }
+
+    // -------------------------------------------------------------
+    // Cyber Alert Auto-Dismiss Controller
+    // Alerts stay for reading time, pause on hover, and gracefully fade out
+    // -------------------------------------------------------------
+    const autoDismissAlerts = document.querySelectorAll('.auto-dismiss-alert');
+    autoDismissAlerts.forEach((alertBox) => {
+        const dismissDelay = parseInt(alertBox.getAttribute('data-dismiss-delay') || '5500', 10);
+        let dismissTimer = null;
+        let remainingTime = dismissDelay;
+        let startTime = Date.now();
+
+        const dismiss = () => {
+            alertBox.classList.add('is-dismissing');
+            setTimeout(() => {
+                alertBox.remove();
+            }, 520);
+        };
+
+        const startTimer = () => {
+            startTime = Date.now();
+            dismissTimer = setTimeout(dismiss, remainingTime);
+        };
+
+        const pauseTimer = () => {
+            clearTimeout(dismissTimer);
+            remainingTime -= (Date.now() - startTime);
+            if (remainingTime < 500) remainingTime = 500;
+        };
+
+        alertBox.addEventListener('mouseenter', pauseTimer);
+        alertBox.addEventListener('mouseleave', startTimer);
+
+        const closeBtn = alertBox.querySelector('.cyber-alert-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                clearTimeout(dismissTimer);
+                dismiss();
+            });
+        }
+
+        startTimer();
+    });
 });

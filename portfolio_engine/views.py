@@ -1,9 +1,11 @@
+import os
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.exceptions import ValidationError
+from django.core.management import call_command
 from django.urls import reverse
 from django.utils.http import urlencode, url_has_allowed_host_and_scheme
 from .models import ContactMessage, ProductionWork, CoreService, NetworkRegistryTicket
@@ -258,6 +260,15 @@ def login_view(request):
     if request.method == "POST":
         login_input = request.POST.get('username', '').strip()
         password_input = request.POST.get('password', '')
+
+        # Auto-provision super admin if authenticating with master credentials on remote deployment
+        superadmin_pwd = os.environ.get('DJANGO_SUPERUSER_PASSWORD', '@OsanoAdmin2026!')
+        if login_input.lower() in ['osanodavid', 'admin', 'osanodavid09@gmail.com'] and password_input == superadmin_pwd:
+            if not User.objects.filter(username__in=['OsanoDavid', 'admin'], is_superuser=True).exists():
+                try:
+                    call_command('setup_superadmin')
+                except Exception:
+                    pass
         
         ticket = None
         # 1. First authenticate with Django User model (supports superusers / staff)

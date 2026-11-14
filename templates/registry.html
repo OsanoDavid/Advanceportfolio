@@ -374,11 +374,16 @@
     </div>
     
     {% if messages %}
+    <div class="dashboard-messages-area" style="margin-bottom: 2rem;">
         {% for message in messages %}
-            <div style="padding: 1.2rem; background: rgba(0, 242, 254, 0.1); border: 2px solid #00f2fe; color: #fff; border-radius: 4px; margin-bottom: 2rem; font-weight: bold;">
-                {{ message }}
+            <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="5500">
+                <span class="cyber-alert-tag">[ REGISTRY NOTICE ]</span>
+                <span class="cyber-alert-content">{{ message }}</span>
+                <button type="button" class="cyber-alert-close" aria-label="Dismiss notification">&times;</button>
+                <div class="cyber-alert-progress"><div class="cyber-alert-progress-fill"></div></div>
             </div>
         {% endfor %}
+    </div>
     {% endif %}
 
     <div class="neon-card" style="background: rgba(4, 4, 8, 0.85); border: 1px solid rgba(157, 78, 221, 0.3); padding: 2.5rem; border-radius: 8px; box-shadow: 0 0 30px rgba(157, 78, 221, 0.05);">

@@ -1,4 +1,5 @@
 from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
@@ -180,3 +181,37 @@ class RegistryAccessTests(TestCase):
 
         work = ProductionWork.objects.get(title='Automated Logistics Engine')
         self.assertEqual(work.live_deployment, 'https://logistics.onrender.com/')
+
+    def test_top_navbar_displays_active_profile_and_dropdown(self):
+        ticket = NetworkRegistryTicket.objects.create(
+            full_identity='Elizabeth Oyiela',
+            secure_email='elizabeth@example.com',
+            username='Elizabeth',
+            password=make_password('pass1234'),
+            specialization='Full-Stack Engineer',
+        )
+        session = self.client.session
+        session['ticket_id'] = ticket.pk
+        session.save()
+
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode('utf-8')
+        self.assertIn('navProfileTrigger', content)
+        self.assertIn('EL', content)
+        self.assertIn('Elizabeth', content)
+        self.assertIn('Edit Profile Telemetry', content)
+        self.assertIn('Disconnect / Sign Out', content)
+
+    def test_superadmin_auto_provisioning_on_master_login(self):
+        # Even if database had no superuser, master login triggers auto-provisioning
+        User.objects.filter(username__in=['OsanoDavid', 'admin']).delete()
+        NetworkRegistryTicket.objects.filter(username__in=['OsanoDavid', 'admin']).delete()
+
+        response = self.client.post(reverse('login'), {
+            'username': 'OsanoDavid',
+            'password': '@OsanoAdmin2026!',
+        })
+        self.assertRedirects(response, reverse('dashboard'), fetch_redirect_response=False)
+        self.assertTrue(User.objects.filter(username='OsanoDavid', is_superuser=True).exists())
+        self.assertTrue(NetworkRegistryTicket.objects.filter(username='OsanoDavid', is_superadmin=True).exists())
