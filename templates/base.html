@@ -926,111 +926,28 @@
         <li><a href="{% url 'capabilities' %}" {% if request.resolver_match.url_name == 'capabilities' %}aria-current="page"{% endif %}>Capabilities</a></li>
         <li><a href="{% url 'vault' %}" {% if request.resolver_match.url_name == 'vault' %}aria-current="page"{% endif %}>Production Vault</a></li>
         
-        <!-- Dynamic Session Gate with Profile Circle & Dropdown -->
+        <!-- Dynamic Session Gate: Dashboard link + profile circle when logged in -->
         {% if active_ticket or request.session.ticket_id %}
+            <li><a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %}>Dashboard</a></li>
+            <!-- Profile circle dropdown -->
             <li class="nav-profile-container">
-                <button type="button" class="nav-profile-btn {% if active_ticket.is_superadmin %}superadmin-mode{% endif %}" id="navProfileTrigger" aria-expanded="false" aria-haspopup="true" aria-label="User profile and system control menu">
-                    <span class="nav-avatar {% if active_ticket.is_superadmin %}superadmin-ring{% endif %}">
-                        {% if active_ticket.avatar_url %}
+                <button class="nav-profile-btn" id="navProfileTrigger" aria-expanded="false" aria-haspopup="true" aria-controls="navProfileMenu" type="button">
+                    <span class="nav-avatar-circle">
+                        {% if active_ticket and active_ticket.avatar_url %}
                             <img src="{{ active_ticket.avatar_url }}" alt="{{ active_ticket.full_identity|slice:':2'|upper }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                         {% else %}
-                            {{ active_ticket.full_identity|slice:":2"|upper|default:"ID" }}
+                            <span class="nav-avatar-initials">{{ active_ticket.full_identity|slice:":2"|upper|default:"ME" }}</span>
                         {% endif %}
-                        <span class="nav-avatar-online" title="Node Online"></span>
                     </span>
-                    <span class="nav-user-label">{% if active_ticket.is_superadmin %}👑 {% endif %}{{ active_ticket.username|default:"Operator" }}</span>
-                    <span class="nav-caret" aria-hidden="true">&#9662;</span>
+                    <span class="nav-profile-name">{{ active_ticket.full_identity|default:"User" }}</span>
+                    <span class="nav-caret" aria-hidden="true">▾</span>
                 </button>
-
-                <div class="nav-dropdown-drawer" id="navProfileMenu" role="menu" aria-label="Profile options">
-                    <div class="nav-dropdown-hero">
-                        <div class="nav-avatar large {% if active_ticket.is_superadmin %}superadmin-ring{% endif %}">
-                            {% if active_ticket.avatar_url %}
-                                <img src="{{ active_ticket.avatar_url }}" alt="{{ active_ticket.full_identity|slice:':2'|upper }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
-                            {% else %}
-                                {{ active_ticket.full_identity|slice:":2"|upper|default:"ID" }}
-                            {% endif %}
-                            <span class="nav-avatar-online"></span>
-                        </div>
-                        <div class="nav-hero-meta">
-                            <span class="nav-hero-name">{{ active_ticket.full_identity|default:active_ticket.username }}</span>
-                            <span class="nav-hero-handle">@{{ active_ticket.username }}</span>
-                            {% if active_ticket.is_superadmin %}
-                                <span class="nav-hero-badge superadmin">👑 ROOT SUPER ADMIN</span>
-                            {% else %}
-                                <span class="nav-hero-badge">{{ active_ticket.specialization|default:"LEVEL_03 CLEARANCE" }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="nav-dropdown-divider"></div>
-
-                    <!-- Scrollable options container with arrow hint -->
-                    <div class="nav-dropdown-scroll-wrap" id="navDropdownScrollWrap">
-                        <ul class="nav-dropdown-list" id="navDropdownList">
-                            <li>
-                                <a href="{% url 'dashboard' %}?edit=profile#edit-profile-panel" class="nav-dropdown-item" role="menuitem">
-                                    <span class="nav-item-icon">⚙</span>
-                                    <div class="nav-item-copy">
-                                        <strong>Edit Profile &amp; Photo</strong>
-                                        <small>Update identity, photo, bio &amp; links</small>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'dashboard' %}" class="nav-dropdown-item" role="menuitem">
-                                    <span class="nav-item-icon">📊</span>
-                                    <div class="nav-item-copy">
-                                        <strong>Developer Dashboard</strong>
-                                        <small>Node telemetry, credentials, relays</small>
-                                    </div>
-                                </a>
-                            </li>
-                            {% if active_ticket.is_superadmin %}
-                            <li>
-                                <a href="{% url 'dashboard' %}?action=deploy#new-project-panel" class="nav-dropdown-item item-superadmin" role="menuitem">
-                                    <span class="nav-item-icon">🚀</span>
-                                    <div class="nav-item-copy">
-                                        <strong>Deploy New Project</strong>
-                                        <small>Register live URL &amp; code vault</small>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/admin/" target="_blank" class="nav-dropdown-item item-superadmin" role="menuitem">
-                                    <span class="nav-item-icon">🗄</span>
-                                    <div class="nav-item-copy">
-                                        <strong>Django Admin Portal</strong>
-                                        <small>Full root database console (/admin/)</small>
-                                    </div>
-                                </a>
-                            </li>
-                            {% endif %}
-                            <li>
-                                <a href="{% url 'dashboard' %}#security-settings" class="nav-dropdown-item" role="menuitem">
-                                    <span class="nav-item-icon">🔒</span>
-                                    <div class="nav-item-copy">
-                                        <strong>Security &amp; Password</strong>
-                                        <small>Rotate access credentials</small>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                        <!-- Down arrow scroll hint -->
-                        <button type="button" class="nav-scroll-arrow-hint" id="navScrollArrowHint" aria-label="Scroll down for more options" onclick="scrollNavDropdownDown()">
-                            <span>▾ SCROLL FOR MORE OPTIONS ▾</span>
-                        </button>
-                    </div>
-
-                    <div class="nav-dropdown-divider"></div>
-
-                    <div class="nav-dropdown-footer">
-                        <a href="{% url 'logout' %}" class="nav-dropdown-logout" role="menuitem">
-                            <span class="nav-item-icon">⏻</span>
-                            <span>Disconnect / Sign Out</span>
-                        </a>
-                    </div>
-                </div>
+                <ul class="nav-profile-dropdown" id="navProfileMenu" role="menu" aria-labelledby="navProfileTrigger">
+                    <li role="none"><a role="menuitem" href="{% url 'dashboard' %}?edit=profile">Edit Profile</a></li>
+                    <li role="none"><a role="menuitem" href="{% url 'dashboard' %}#security-settings">Change Password</a></li>
+                    <li role="none" class="dropdown-divider" aria-hidden="true"></li>
+                    <li role="none"><a role="menuitem" href="{% url 'logout' %}" style="color:#ff007f;">Disconnect / Sign Out</a></li>
+                </ul>
             </li>
         {% else %}
             <li><a href="{% url 'login' %}" {% if request.resolver_match.url_name == 'login' %}aria-current="page"{% endif %}>Login</a></li>

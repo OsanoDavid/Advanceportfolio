@@ -219,6 +219,45 @@
     </section>
     {% endif %}
 
+    <!-- ⚡ DIRECT PROPOSAL DISPATCH — Full width, top of dashboard -->
+    <section class="neon-card proposal-dispatch-fullwidth" aria-label="Direct Proposal Dispatch" style="margin-bottom: 2rem; border-color: rgba(0, 242, 254, 0.4); width: 100%;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h3 style="color: #00f2fe; margin: 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
+                ⚡ Direct Proposal Dispatch
+            </h3>
+            <span style="color: #39ff14; font-size: 0.75rem; font-family: monospace;">● CHANNEL SECURE</span>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6; margin-top: 0; margin-bottom: 1.2rem;">
+            Send an authenticated collaboration request, project brief, or attachment inquiry directly to David Osano's terminal.
+        </p>
+
+        <form method="POST" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: end;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="send_inquiry">
+
+            <div class="form-field-group" style="margin-bottom: 0;">
+                <label class="cyber-label-sm">Transmission Subject</label>
+                <select name="subject" class="dashboard-input">
+                    <option value="Collaboration Proposal">Project Collaboration Proposal</option>
+                    <option value="Industrial Attachment / Job">Industrial Attachment / Job Opportunity</option>
+                    <option value="Code Architecture Review">System Architecture Review</option>
+                    <option value="General Inquiry">General Technical Inquiry</option>
+                </select>
+            </div>
+
+            <div class="form-field-group" style="margin-bottom: 0;">
+                <label class="cyber-label-sm">Proposal Specification & Details</label>
+                <textarea name="message" rows="3" class="dashboard-input" placeholder="Type your project proposal, role details, or technical inquiry here..." required style="resize: vertical;"></textarea>
+            </div>
+
+            <div style="grid-column: 1 / -1; margin-top: 0.5rem;">
+                <button type="submit" class="btn-primary-glow" data-loading-text="Transmitting Direct Proposal..." style="width: 100%;">
+                    TRANSMIT DIRECT PROPOSAL &rarr;
+                </button>
+            </div>
+        </form>
+    </section>
+
     <!-- Main Dashboard Grid Layout -->
     <div class="dashboard-main-grid">
 
@@ -226,6 +265,7 @@
         <div class="dashboard-column">
             
             <section class="neon-card profile-card" aria-labelledby="profile-title">
+                <!-- Profile header: avatar + name + badges always visible -->
                 <div class="profile-card-header">
                     <div class="profile-avatar-node" style="{% if ticket.avatar_url %}padding:0;overflow:hidden;{% endif %}">
                         {% if ticket.avatar_url %}
@@ -249,7 +289,8 @@
                     </div>
                 </div>
 
-                <div class="profile-details-table">
+                <!-- Profile details table: hidden by default, shown when Edit is clicked -->
+                <div class="profile-details-table" id="profile-details-view" style="display: none; margin-top: 1.2rem;">
                     <div class="profile-detail-row">
                         <span class="detail-label">Communication Relay (Email)</span>
                         <span class="detail-value value-highlight">{{ ticket.secure_email }}</span>
@@ -413,43 +454,6 @@
         <!-- COLUMN 2: Operations & Command Actions Matrix -->
         <div class="dashboard-column">
             
-            <!-- Quick Proposal / Collaboration Dispatch Console -->
-            <section class="neon-card" style="border-color: rgba(0, 242, 254, 0.4);">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-                    <h3 style="color: #00f2fe; margin: 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
-                        ⚡ Direct Proposal Dispatch
-                    </h3>
-                    <span style="color: #39ff14; font-size: 0.75rem; font-family: monospace;">● CHANNEL SECURE</span>
-                </div>
-                <p style="color: #94a3b8; font-size: 0.85rem; line-height: 1.6; margin-top: 0; margin-bottom: 1.2rem;">
-                    Send an authenticated collaboration request, project brief, or attachment inquiry directly to David Osano's terminal.
-                </p>
-
-                <form method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="send_inquiry">
-
-                    <div class="form-field-group">
-                        <label class="cyber-label-sm">Transmission Subject</label>
-                        <select name="subject" class="dashboard-input">
-                            <option value="Collaboration Proposal">Project Collaboration Proposal</option>
-                            <option value="Industrial Attachment / Job">Industrial Attachment / Job Opportunity</option>
-                            <option value="Code Architecture Review">System Architecture Review</option>
-                            <option value="General Inquiry">General Technical Inquiry</option>
-                        </select>
-                    </div>
-
-                    <div class="form-field-group">
-                        <label class="cyber-label-sm">Proposal Specification & Details</label>
-                        <textarea name="message" rows="4" class="dashboard-input" placeholder="Type your project proposal, role details, or technical inquiry here..." required></textarea>
-                    </div>
-
-                    <button type="submit" class="btn-primary-glow" data-loading-text="Transmitting Direct Proposal..." style="width: 100%;">
-                        TRANSMIT DIRECT PROPOSAL &rarr;
-                    </button>
-                </form>
-            </section>
-
             <!-- Production Vault & Document Access -->
             <section class="neon-card" style="margin-top: 2rem; border-color: rgba(255, 0, 127, 0.35);">
                 <h3 style="color: #ff007f; margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
