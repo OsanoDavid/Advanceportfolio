@@ -10,12 +10,6 @@
             <span class="status-pulse-dot"></span>
             <span>SECURE TERMINAL // NODE ID: #NODE-{{ ticket.id|stringformat:"04d" }} // STATUS: {% if ticket.is_superadmin %}<strong style="color:#39ff14;">ROOT SUPER ADMIN</strong>{% else %}VERIFIED{% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 </span>
         </div>
         <h1 class="dashboard-title">
@@ -32,21 +26,9 @@
         {% for message in messages %}
         <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 " data-dismiss-delay="6500">
             <span class="cyber-alert-tag">{% if 'error' in message.tags %}[ FAILED / ERROR ]{% elif 'success' in message.tags %}[ SYSTEM CONFIRMED ]{% else %}[ SYSTEM NOTIFICATION ]{% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 </span>
             <span class="cyber-alert-content">{{ message }}</span>
             <button type="button" class="cyber-alert-close" aria-label="Dismiss notification">&times;</button>
@@ -56,12 +38,6 @@
     </div>
     {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
 
     {% if ticket.is_superadmin %}
@@ -158,12 +134,6 @@
                 {% for proj in all_projects %}
                 <div style="background: rgba(6, 6, 12, 0.9); border: 1px solid rgba(0, 242, 254, 0.25); border-left: 4px solid {% if proj.system_status == 'Operational' %}#39ff14{% else %}#00f2fe{% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 ; border-radius: 6px; padding: 1.2rem;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <div>
@@ -172,12 +142,6 @@
                         </div>
                         <span class="cyber-pill {% if proj.system_status == 'Operational' %}pill-cyan{% else %}pill-pink{% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 ">
                             {{ proj.system_status }}
                         </span>
@@ -189,23 +153,11 @@
                         <span>Live: <a href="{{ proj.live_deployment }}" target="_blank" rel="noopener noreferrer" style="color: #39ff14; text-decoration: underline;">{{ proj.live_deployment }}</a></span>
                         {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
                         {% if proj.source_repository %}
                         <span>Repo: <a href="{{ proj.source_repository }}" target="_blank" rel="noopener noreferrer" style="color: #00f2fe; text-decoration: underline;">GitHub</a></span>
                         {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
                     </div>
 
@@ -240,39 +192,15 @@
                                     <select name="system_status" class="dashboard-input">
                                         <option value="Operational" {% if proj.system_status == 'Operational' %}selected{% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 >Operational (Live)</option>
                                         <option value="Deployment in Progress" {% if proj.system_status == 'Deployment in Progress' %}selected{% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 >Deployment in Progress</option>
                                         <option value="Staging / Beta" {% if proj.system_status == 'Staging / Beta' %}selected{% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 >Staging / Beta</option>
                                         <option value="Maintenance" {% if proj.system_status == 'Maintenance' %}selected{% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 >Maintenance</option>
                                     </select>
                                 </div>
@@ -312,23 +240,11 @@
             <p style="color: #64748b; font-size: 0.85rem; font-family: monospace;">No deployed projects registered in database yet. Click <strong>+ DEPLOY NEW PROJECT</strong> above to add one!</p>
             {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
         </div>
     </section>
     {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
 
     <!-- ⚡ DIRECT PROPOSAL DISPATCH — Full width, top of dashboard -->
@@ -374,12 +290,6 @@
                 <div class="profile-card-header">
                     <div class="profile-avatar-node" style="{% if ticket.avatar_url %}padding:0;overflow:hidden;{% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 ">
                         {% if ticket.avatar_url %}
                             <img src="{{ ticket.avatar_url }}" alt="{{ ticket.full_identity|slice:':2'|upper }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
@@ -387,12 +297,6 @@
                             <span>{{ ticket.full_identity|slice:":2"|upper }}</span>
                         {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
                         <span class="avatar-status-badge" title="Node Online"></span>
                     </div>
@@ -407,12 +311,6 @@
                                 <span class="cyber-pill pill-pink">LEVEL_03 CLEARANCE</span>
                             {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
                         </div>
                     </div>
@@ -427,12 +325,6 @@
                         <span class="detail-label">Contact Relay Phone</span>
                         <span class="detail-value">{% if ticket.phone_number %}{{ ticket.phone_number }}{% else %}<span style="color: #64748b;">Not configured</span>{% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 </span>
                     </div>
                     <div class="profile-detail-row">
@@ -450,12 +342,6 @@
                     </div>
                     {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
                     {% if ticket.gender %}
                     <div class="profile-detail-row">
@@ -464,12 +350,6 @@
                     </div>
                     {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
                     {% if ticket.github_link %}
                     <div class="profile-detail-row">
@@ -478,12 +358,6 @@
                     </div>
                     {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
                     {% if ticket.live_link %}
                     <div class="profile-detail-row">
@@ -492,12 +366,6 @@
                     </div>
                     {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
                     <div class="profile-detail-row">
                         <span class="detail-label">Framework Strengths & Scope</span>
@@ -531,12 +399,6 @@
                                         <span id="photoPreviewInitials">{{ ticket.full_identity|slice:":2"|upper }}</span>
                                     {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 200px;">
@@ -550,12 +412,6 @@
                                     </label>
                                     {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
                                 </div>
                             </div>
@@ -627,12 +483,6 @@
                     </p>
                 {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
             </section>
         </div>
@@ -726,12 +576,6 @@
                     </a>
                     {% endif %}
 
-                <!-- Edit Profile Trigger -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <button type="button" class="action-btn-outline" onclick="toggleEditPanel()" id="btn-toggle-edit">
-                        ⚙ EDIT NODE PROFILE TELEMETRY
-                    </button>
-                </div>
 
                 </div>
 
@@ -808,6 +652,19 @@
     }
 
     function toggleEditPanel() {
+    const panel = document.getElementById('edit-profile-panel');
+    const btn = document.getElementById('btn-toggle-edit');
+    const details = document.getElementById('profile-details-view');
+    if (panel.style.display === 'none' || panel.style.display === '') {
+        panel.style.display = 'block';
+        if (details) details.style.display = 'block';
+        btn.textContent = '▲ HIDE PROFILE EDIT FORM';
+    } else {
+        panel.style.display = 'none';
+        if (details) details.style.display = 'none';
+        btn.textContent = '⚙ EDIT NODE PROFILE TELEMETRY';
+    }
+}
         const panel = document.getElementById('edit-profile-panel');
         const btn = document.getElementById('btn-toggle-edit');
         if (panel.style.display === 'none' || panel.style.display === '') {
