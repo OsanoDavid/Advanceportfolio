@@ -390,14 +390,11 @@
             100%     { border-color: rgba(0, 242, 254, 0.65); box-shadow: 0 0 14px rgba(0, 242, 254, 0.35); }
         }
         .nav-profile-btn {
-    /* Hide edit profile buttons in profile card */
-}
-.profile-card .action-btn-outline#btn-toggle-edit { display:none; }
             display: inline-flex;
             align-items: center;
             gap: 0.65rem;
             padding: 0.35rem 0.85rem 0.35rem 0.4rem;
-            background: rgba(6, 6, 14, 0.9);
+            background: transparent;
             border: 1px solid rgba(0, 242, 254, 0.45);
             border-radius: 9999px;
             color: #f8fafc;
@@ -408,10 +405,11 @@
             transition: all 0.25s ease;
             animation: dynamicNavProfileBtnGlow 75s linear infinite;
         }
+        .profile-card .action-btn-outline#btn-toggle-edit { display: none; }
         .nav-profile-btn:hover,
         .nav-profile-btn[aria-expanded="true"] {
             filter: brightness(1.2);
-            background: rgba(10, 10, 24, 0.95);
+            background: transparent;
         }
         .nav-profile-btn.superadmin-mode {
             animation: dynamicNavProfileBtnGlow 75s linear infinite;
@@ -699,9 +697,6 @@
                 padding: 0.4rem 0 !important;
             }
             .nav-profile-btn {
-    /* Hide edit profile buttons in profile card */
-}
-.profile-card .action-btn-outline#btn-toggle-edit { display:none; }
                 width: 100%;
                 justify-content: space-between;
                 padding: 0.65rem 0.95rem;
