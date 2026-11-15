@@ -652,28 +652,17 @@
     }
 
     function toggleEditPanel() {
-    const panel = document.getElementById('edit-profile-panel');
-    const btn = document.getElementById('btn-toggle-edit');
-    const details = document.getElementById('profile-details-view');
-    if (panel.style.display === 'none' || panel.style.display === '') {
-        panel.style.display = 'block';
-        if (details) details.style.display = 'block';
-        btn.textContent = '▲ HIDE PROFILE EDIT FORM';
-    } else {
-        panel.style.display = 'none';
-        if (details) details.style.display = 'none';
-        btn.textContent = '⚙ EDIT NODE PROFILE TELEMETRY';
-    }
-}
         const panel = document.getElementById('edit-profile-panel');
         const btn = document.getElementById('btn-toggle-edit');
-        if (panel.style.display === 'none' || panel.style.display === '') {
-            panel.style.display = 'block';
-            btn.textContent = '▲ HIDE PROFILE EDIT FORM';
-        } else {
-            panel.style.display = 'none';
-            btn.textContent = '⚙ EDIT NODE PROFILE TELEMETRY';
-        }
+        const details = document.getElementById('profile-details-view');
+        if (!panel) return;
+
+        const shouldOpen = panel.style.display === 'none' || panel.style.display === '';
+        panel.style.display = shouldOpen ? 'block' : 'none';
+        if (details) details.style.display = shouldOpen ? 'block' : 'none';
+        if (btn) btn.textContent = shouldOpen
+            ? '▲ HIDE PROFILE EDIT FORM'
+            : '⚙ EDIT NODE PROFILE TELEMETRY';
     }
 
     function togglePasswordPanel() {
