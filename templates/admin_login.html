@@ -134,13 +134,13 @@
     {% endif %}
 
     <div style="background: rgba(2,2,8,0.95); border: 1px solid rgba(57,255,20,0.3); border-radius: 10px; padding: 2.5rem; box-shadow: 0 0 40px rgba(57,255,20,0.08);">
-        <form method="POST">
+        <form method="POST" autocomplete="off">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.GET.next|default:'' }}">
 
             <div class="input-group">
                 <label class="root-label">Admin Username or Email</label>
-                <input type="text" name="username" class="root-input" required placeholder="Enter admin identifier" autocomplete="username">
+                <input type="text" name="username" class="root-input" required placeholder="Enter admin identifier" autocomplete="off" spellcheck="false">
             </div>
 
             <div class="input-group" style="margin-bottom: 2rem;">

@@ -141,7 +141,7 @@
     {% endif %}
 
     <div class="neon-card" style="background: rgba(4, 4, 8, 0.9); border: 1px solid rgba(0, 242, 254, 0.25); padding: 3rem 2.5rem; border-radius: 8px; box-shadow: 0 0 40px rgba(0, 242, 254, 0.05);">
-        <form method="POST">
+        <form method="POST" autocomplete="off">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.GET.next|default:'' }}">
             
@@ -154,6 +154,8 @@
                        class="cyber-input glow-cyan" 
                        required 
                        placeholder="Enter username or email address"
+                       autocomplete="off"
+                       spellcheck="false"
                        style="margin-top: 0.4rem;">
             </div>
 
@@ -166,7 +168,8 @@
                            id="id_password" 
                            class="cyber-input glow-pink" 
                            required 
-                           placeholder="••••••••">
+                           placeholder="••••••••"
+                           autocomplete="current-password">
                     <i class="fa-solid fa-eye password-toggle-icon" id="eyeToggle" onclick="togglePasswordVisibility()"></i>
                 </div>
             </div>

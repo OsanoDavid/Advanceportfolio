@@ -387,7 +387,7 @@
     {% endif %}
 
     <div class="neon-card" style="background: rgba(4, 4, 8, 0.85); border: 1px solid rgba(157, 78, 221, 0.3); padding: 2.5rem; border-radius: 8px; box-shadow: 0 0 30px rgba(157, 78, 221, 0.05);">
-        <form method="POST" id="registryWizardForm" onsubmit="return validatePasswords()">
+        <form method="POST" id="registryWizardForm" autocomplete="off" onsubmit="return validatePasswords()">
             {% csrf_token %}
             
             <!-- STAGE 01: PERSONAL & CORE ACCESS DETAILS -->
@@ -404,7 +404,7 @@
                             <li class="registry-check-item" data-check-item="gender"><span>Gender</span><span class="check-mark" aria-hidden="true"></span></li>
                             <li class="registry-check-item" data-check-item="identity"><span>ID / Passport</span><span class="check-mark" aria-hidden="true"></span></li>
                             <li class="registry-check-item" data-check-item="contact"><span>Contact Info</span><span class="check-mark" aria-hidden="true"></span></li>
-                            <li class="registry-check-item" data-check-item="academic"><span>Academic Record</span><span class="check-mark" aria-hidden="true"></span></li>
+                            <li class="registry-check-item" data-check-item="academic"><span>Academic (Opt)</span><span class="check-mark" aria-hidden="true"></span></li>
                             <li class="registry-check-item" data-check-item="organization"><span>Organization</span><span class="check-mark" aria-hidden="true"></span></li>
                             <li class="registry-check-item" data-check-item="credentials"><span>Account Access</span><span class="check-mark" aria-hidden="true"></span></li>
                         </ul>
@@ -414,22 +414,22 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="input-group">
                         <label class="cyber-label">Full Name</label>
-                        <input type="text" name="identity" id="id_identity" class="cyber-input glow-cyan" required placeholder="Osano David">
+                        <input type="text" name="identity" id="id_identity" class="cyber-input glow-cyan" required placeholder="Osano David" autocomplete="off" spellcheck="false">
                     </div>
                     <div class="input-group">
                         <label class="cyber-label">National Identity Card / ID Number</label>
-                        <input type="text" name="id_number" id="id_number" class="cyber-input glow-cyan" required placeholder="e.g. 38472910">
+                        <input type="text" name="id_number" id="id_number" class="cyber-input glow-cyan" required placeholder="e.g. 38472910" autocomplete="off">
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="input-group">
                         <label class="cyber-label">Contact Relay Phone</label>
-                        <input type="tel" name="phone_number" id="id_phone_number" class="cyber-input glow-cyan" required placeholder="e.g. +254 700 000000">
+                        <input type="tel" name="phone_number" id="id_phone_number" class="cyber-input glow-cyan" required placeholder="e.g. +254 700 000000" autocomplete="off">
                     </div>
                     <div class="input-group">
-                        <label class="cyber-label">Academic Registration Number</label>
-                        <input type="text" name="reg_number" id="id_reg_number" class="cyber-input glow-cyan" required placeholder="e.g. IN11/00000/21">
+                        <label class="cyber-label">Academic Registration Number <span style="color: #64748b; font-size: 0.72rem; text-transform: none;">(Optional — for students / alumni)</span></label>
+                        <input type="text" name="reg_number" id="id_reg_number" class="cyber-input glow-cyan" placeholder="e.g. IN11/00000/21 (optional)" autocomplete="off">
                     </div>
                 </div>
 
@@ -455,7 +455,7 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="input-group">
                         <label class="cyber-label">Communication Relay Email</label>
-                        <input type="email" name="email" id="id_email" class="cyber-input glow-cyan" required placeholder="developer@firm.com">
+                        <input type="email" name="email" id="id_email" class="cyber-input glow-cyan" required placeholder="developer@firm.com" autocomplete="off">
                     </div>
                     <div class="input-group">
                         <label class="cyber-label">Institution / Organization</label>
@@ -469,36 +469,41 @@
                 <!-- Hidden Custom Organization Input -->
                 <div class="conditional-panel" id="customOrgPanel">
                     <label class="cyber-label" style="color: #ff007f;">Enter Custom Institution Name</label>
-                    <input type="text" name="org_custom" id="id_org_custom" class="cyber-input glow-pink" placeholder="e.g. Nairobi University">
+                    <input type="text" name="org_custom" id="id_org_custom" class="cyber-input glow-pink" placeholder="e.g. Nairobi University" autocomplete="off">
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="input-group">
                         <label class="cyber-label">Secure Access Password</label>
                         <div class="password-container">
-                            <input type="password" name="password" id="id_password" class="cyber-input glow-cyan" required placeholder="••••••••">
+                            <input type="password" name="password" id="id_password" class="cyber-input glow-cyan" required placeholder="••••••••" autocomplete="new-password" oninput="checkPasswordRealtime()">
                             <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('id_password', this)"></i>
+                        </div>
+                        <div id="passwordStrengthWrap" style="margin-top: 0.45rem; font-family: monospace; font-size: 0.74rem;">
+                            <span id="passwordStrengthText" style="color: #64748b;">Keyphrase: minimum 6 characters (letters &amp; numbers recommended)</span>
                         </div>
                     </div>
                     <div class="input-group">
                         <label class="cyber-label">Confirm Access Password</label>
                         <div class="password-container">
-                            <input type="password" name="password_confirm" id="id_password_confirm" class="cyber-input glow-cyan" required placeholder="••••••••">
+                            <input type="password" name="password_confirm" id="id_password_confirm" class="cyber-input glow-cyan" required placeholder="••••••••" autocomplete="new-password" oninput="checkPasswordRealtime()">
                             <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('id_password_confirm', this)"></i>
                         </div>
-                        <span id="passwordError" style="color: #ff0055; font-size: 0.75rem; font-family: monospace; display: none; margin-top: 0.4rem;">WARNING: Password inputs fail verification check.</span>
+                        <div id="passwordMatchWrap" style="margin-top: 0.45rem; font-family: monospace; font-size: 0.74rem;">
+                            <span id="passwordMatchText" style="color: #64748b;">Confirm your keyphrase above</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="input-group">
                     <label class="cyber-label">Portal System Username</label>
-                    <input type="text" name="username" id="id_username" class="cyber-input glow-cyan" required placeholder="Choose a unique username">
+                    <input type="text" name="username" id="id_username" class="cyber-input glow-cyan" required placeholder="Choose a unique username" autocomplete="off" spellcheck="false">
                 </div>
                     </div>
                 </div>
 
                 <div style="text-align: right; margin-top: 2rem;">
-                    <button type="button" class="control-btn btn-next" onclick="navigateToStep(2)">Proceed to Step 02 &rarr;</button>
+                    <button type="button" class="control-btn btn-next" id="btnProceedStep2" data-loading-text="Validating &amp; Advancing..." onclick="handleProceedToStep2()">Proceed to Step 02 &rarr;</button>
                 </div>
             </div>
 
@@ -649,7 +654,7 @@
 
                 <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
                     <button type="button" class="control-btn btn-prev" onclick="navigateToStep(1)">&larr; Back to Step 01</button>
-                    <button type="button" class="control-btn btn-next" onclick="prepareAndShowReviewStep()">Compile System Review &rarr;</button>
+                    <button type="button" class="control-btn btn-next" id="btnProceedStep3" data-loading-text="Compiling Review Telemetry..." onclick="handleProceedToStep3()">Compile System Review &rarr;</button>
                 </div>
             </div>
 
@@ -818,9 +823,9 @@
                 gender: Boolean(document.querySelector('.gender-radio:checked')),
                 identity: valid('id_number'),
                 contact: valid('id_phone_number') && valid('id_email'),
-                academic: valid('id_reg_number'),
+                academic: true,
                 organization,
-                credentials: valid('id_username') && password.length > 0 && password === value('id_password_confirm')
+                credentials: valid('id_username') && password.length >= 6 && password === value('id_password_confirm')
             },
             2: {
                 specialization: checkedCount('.spec-cb') > 0 && (!document.getElementById('id_spec_other').checked || value('id_spec_custom').length > 0),
@@ -830,8 +835,8 @@
                 scope: valid('id_scope')
             },
             3: {
-                identity: valid('id_identity') && valid('id_number') && valid('id_phone_number') && valid('id_reg_number') && valid('id_email') && organization && Boolean(document.querySelector('.gender-radio:checked')),
-                credentials: valid('id_username') && password.length > 0 && password === value('id_password_confirm'),
+                identity: valid('id_identity') && valid('id_number') && valid('id_phone_number') && valid('id_email') && organization && Boolean(document.querySelector('.gender-radio:checked')),
+                credentials: valid('id_username') && password.length >= 6 && password === value('id_password_confirm'),
                 specialization: checkedCount('.spec-cb') > 0 && (!document.getElementById('id_spec_other').checked || value('id_spec_custom').length > 0),
                 languages: checkedCount('.lang-cb') > 0 && (!document.getElementById('id_lang_other').checked || value('id_lang_custom').length > 0),
                 styling: checkedCount('.style-cb') > 0 && (!document.getElementById('id_style_other').checked || value('id_style_custom').length > 0),
@@ -857,46 +862,192 @@
     });
     updateRegistryChecklist();
 
-    function navigateToStep(stepNumber) {
-        // Step 1 Validation Gate
-        if (stepNumber === 2) {
-            const requiredFields = ["id_identity", "id_number", "id_phone_number", "id_reg_number", "id_email", "id_org_select", "id_username", "id_password", "id_password_confirm"];
-            let isValid = true;
-            requiredFields.forEach(fieldId => {
-                const el = document.getElementById(fieldId);
-                if (!el.value.trim() || !el.checkValidity()) {
-                    el.style.borderColor = "#ff0055";
-                    isValid = false;
-                } else {
-                    el.style.borderColor = "rgba(148,163,184,0.25)";
-                }
-            });
-            
-            // Check custom org if active
-            const orgSelect = document.getElementById("id_org_select");
-            if (orgSelect.value === "Other") {
-                const customOrg = document.getElementById("id_org_custom");
-                if (!customOrg.value.trim()) {
-                    customOrg.style.borderColor = "#ff0055";
-                    isValid = false;
-                }
-            }
+    // -------------------------------------------------------------
+    // Realtime Password Matching & Strength Verification
+    // -------------------------------------------------------------
+    function checkPasswordRealtime() {
+        const passInput = document.getElementById("id_password");
+        const confirmInput = document.getElementById("id_password_confirm");
+        const strengthText = document.getElementById("passwordStrengthText");
+        const matchText = document.getElementById("passwordMatchText");
 
-            if (!isValid) {
-                if (window.showCyberAlert) {
-                    window.showCyberAlert("REGISTRATION FAILED: Please fill all required personal parameters in Stage 01.", "error");
-                } else {
-                    alert("CRITICAL ERROR: Please fill all required personal parameters in Stage 01.");
-                }
-                return;
-            }
+        const pass = passInput.value;
+        const confirm = confirmInput.value;
 
-            if (!validatePasswords()) {
-                return;
+        // 1. Password Strength
+        if (pass.length === 0) {
+            passInput.style.borderColor = "rgba(148, 163, 184, 0.25)";
+            passInput.style.boxShadow = "none";
+            strengthText.textContent = "Keyphrase: minimum 6 characters (letters & numbers recommended)";
+            strengthText.style.color = "#64748b";
+        } else if (pass.length < 6) {
+            passInput.style.borderColor = "#ff0055";
+            passInput.style.boxShadow = "0 0 10px rgba(255, 0, 85, 0.45)";
+            strengthText.textContent = `⚠ Too short: ${pass.length}/6 characters (minimum 6 required)`;
+            strengthText.style.color = "#ff0055";
+        } else {
+            const hasLetters = /[a-zA-Z]/.test(pass);
+            const hasNumbers = /[0-9]/.test(pass);
+            const hasSymbols = /[^a-zA-Z0-9]/.test(pass);
+
+            if ((hasLetters && hasNumbers) || hasSymbols) {
+                passInput.style.borderColor = "#39ff14";
+                passInput.style.boxShadow = "0 0 10px rgba(57, 255, 20, 0.4)";
+                strengthText.textContent = "✓ Strong security keyphrase verified";
+                strengthText.style.color = "#39ff14";
+            } else {
+                passInput.style.borderColor = "#00f2fe";
+                passInput.style.boxShadow = "0 0 10px rgba(0, 242, 254, 0.35)";
+                strengthText.textContent = "● Moderate keyphrase (combine letters and digits for strong grade)";
+                strengthText.style.color = "#00f2fe";
             }
-            updateRegistryChecklist();
         }
 
+        // 2. Password Match
+        if (confirm.length === 0) {
+            confirmInput.style.borderColor = "rgba(148, 163, 184, 0.25)";
+            confirmInput.style.boxShadow = "none";
+            matchText.textContent = "Confirm your keyphrase above";
+            matchText.style.color = "#64748b";
+        } else if (pass !== confirm) {
+            // Unmatched - turn red
+            confirmInput.style.borderColor = "#ff0055";
+            confirmInput.style.boxShadow = "0 0 14px rgba(255, 0, 85, 0.55)";
+            matchText.textContent = "✗ Keyphrases do not match!";
+            matchText.style.color = "#ff0055";
+        } else {
+            // Matched - turn green
+            if (pass.length >= 6) {
+                confirmInput.style.borderColor = "#39ff14";
+                confirmInput.style.boxShadow = "0 0 14px rgba(57, 255, 20, 0.45)";
+                matchText.textContent = "✓ Keyphrases match successfully.";
+                matchText.style.color = "#39ff14";
+            } else {
+                confirmInput.style.borderColor = "#00f2fe";
+                confirmInput.style.boxShadow = "0 0 10px rgba(0, 242, 254, 0.35)";
+                matchText.textContent = "✓ Keyphrases match (minimum 6 characters required).";
+                matchText.style.color = "#00f2fe";
+            }
+        }
+    }
+
+    function validatePasswords() {
+        const passInput = document.getElementById("id_password");
+        const confirmInput = document.getElementById("id_password_confirm");
+        const pass = passInput.value;
+        const confirm = confirmInput.value;
+
+        checkPasswordRealtime();
+
+        if (pass.length < 6) {
+            passInput.style.borderColor = "#ff0055";
+            passInput.style.boxShadow = "0 0 14px rgba(255, 0, 85, 0.55)";
+            if (window.showCyberAlert) {
+                window.showCyberAlert("REGISTRATION FAILED: Security password must be at least 6 characters long.", "error");
+            }
+            const submitBtn = document.getElementById('btnSubmitRegistry');
+            if (submitBtn && window.resetButtonProcessing) {
+                window.resetButtonProcessing(submitBtn);
+            }
+            return false;
+        }
+
+        if (pass !== confirm) {
+            confirmInput.style.borderColor = "#ff0055";
+            confirmInput.style.boxShadow = "0 0 14px rgba(255, 0, 85, 0.55)";
+            if (window.showCyberAlert) {
+                window.showCyberAlert("REGISTRATION FAILED: Security keyphrases do not match. Please verify your passwords.", "error");
+            }
+            const submitBtn = document.getElementById('btnSubmitRegistry');
+            if (submitBtn && window.resetButtonProcessing) {
+                window.resetButtonProcessing(submitBtn);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    // -------------------------------------------------------------
+    // Step Transition Controllers with Loading Feedback
+    // -------------------------------------------------------------
+    function handleProceedToStep2() {
+        const btn = document.getElementById('btnProceedStep2');
+        // id_reg_number is optional, not in requiredFields!
+        const requiredFields = ["id_identity", "id_number", "id_phone_number", "id_email", "id_org_select", "id_username", "id_password", "id_password_confirm"];
+        let isValid = true;
+
+        requiredFields.forEach(fieldId => {
+            const el = document.getElementById(fieldId);
+            if (!el.value.trim() || !el.checkValidity()) {
+                el.style.borderColor = "#ff0055";
+                isValid = false;
+            } else {
+                if (fieldId !== 'id_password' && fieldId !== 'id_password_confirm') {
+                    el.style.borderColor = "rgba(148,163,184,0.25)";
+                }
+            }
+        });
+
+        const orgSelect = document.getElementById("id_org_select");
+        if (orgSelect.value === "Other") {
+            const customOrg = document.getElementById("id_org_custom");
+            if (!customOrg.value.trim()) {
+                customOrg.style.borderColor = "#ff0055";
+                isValid = false;
+            }
+        }
+
+        if (!isValid) {
+            if (window.showCyberAlert) {
+                window.showCyberAlert("REGISTRATION FAILED: Please fill all required personal parameters in Stage 01.", "error");
+            } else {
+                alert("CRITICAL ERROR: Please fill all required personal parameters in Stage 01.");
+            }
+            return;
+        }
+
+        if (!validatePasswords()) {
+            return;
+        }
+
+        // Show button loading spinner while transitioning
+        if (btn && window.setButtonProcessing) {
+            window.setButtonProcessing(btn, "Validating & Advancing...");
+        }
+
+        setTimeout(() => {
+            navigateToStep(2);
+            if (btn && window.resetButtonProcessing) {
+                window.resetButtonProcessing(btn);
+            }
+        }, 400);
+    }
+
+    function handleProceedToStep3() {
+        const btn = document.getElementById('btnProceedStep3');
+        const scopeText = document.getElementById('id_scope');
+        if (!scopeText.value.trim()) {
+            scopeText.style.borderColor = "#ff0055";
+            if (window.showCyberAlert) {
+                window.showCyberAlert("REGISTRATION FAILED: Please specify your scope requirements or core experiences.", "error");
+            }
+            return;
+        }
+
+        if (btn && window.setButtonProcessing) {
+            window.setButtonProcessing(btn, "Compiling Review Telemetry...");
+        }
+
+        setTimeout(() => {
+            prepareAndShowReviewStep();
+            if (btn && window.resetButtonProcessing) {
+                window.resetButtonProcessing(btn);
+            }
+        }, 400);
+    }
+
+    function navigateToStep(stepNumber) {
         // De-activate all stages
         document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
         document.querySelectorAll('.step-node').forEach(node => node.classList.remove('active', 'completed'));
@@ -918,40 +1069,13 @@
         const progressPercent = ((stepNumber - 1) / 2) * 100;
         document.getElementById('progressBar').style.width = `${progressPercent}%`;
         updateRegistryChecklist();
-    }
-
-    function validatePasswords() {
-        const pass = document.getElementById("id_password").value;
-        const confirm = document.getElementById("id_password_confirm").value;
-        const errorMsg = document.getElementById("passwordError");
-
-        if (pass !== confirm) {
-            errorMsg.style.display = "block";
-            document.getElementById("id_password_confirm").style.borderColor = "#ff0055";
-            if (window.showCyberAlert) {
-                window.showCyberAlert("REGISTRATION FAILED: Security keyphrases do not match. Please verify your passwords.", "error");
-            }
-            const submitBtn = document.getElementById('btnSubmitRegistry');
-            if (submitBtn && window.resetButtonProcessing) {
-                window.resetButtonProcessing(submitBtn);
-            }
-            return false;
-        } else {
-            errorMsg.style.display = "none";
-            document.getElementById("id_password_confirm").style.borderColor = "rgba(148,163,184,0.25)";
-            return true;
-        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function prepareAndShowReviewStep() {
         const scopeText = document.getElementById('id_scope');
         if (!scopeText.value.trim()) {
             scopeText.style.borderColor = "#ff0055";
-            if (window.showCyberAlert) {
-                window.showCyberAlert("REGISTRATION FAILED: Please specify your scope requirements or core experiences.", "error");
-            } else {
-                alert("Please specify your scope requirements or core experiences.");
-            }
             return;
         }
         scopeText.style.borderColor = "rgba(148,163,184,0.25)";
@@ -960,7 +1084,9 @@
         document.getElementById('rev_identity').innerText = document.getElementById('id_identity').value;
         document.getElementById('rev_id_number').innerText = document.getElementById('id_number').value;
         document.getElementById('rev_phone_number').innerText = document.getElementById('id_phone_number').value;
-        document.getElementById('rev_reg_number').innerText = document.getElementById('id_reg_number').value;
+        document.getElementById('rev_reg_number').innerText = document.getElementById('id_reg_number').value.trim() || "Not provided / Independent";
+        document.getElementById('rev_email').innerText = document.getElementById('id_email').value;
+        document.getElementById('rev_username').innerText = document.getElementById('id_username').value;
         document.getElementById('rev_email').innerText = document.getElementById('id_email').value;
         document.getElementById('rev_username').innerText = document.getElementById('id_username').value;
 

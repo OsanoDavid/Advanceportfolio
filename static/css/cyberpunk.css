@@ -363,6 +363,24 @@ navbar {
     box-shadow: 0 0 25px rgba(255, 0, 127, 0.6) !important;
 }
 
+/* Prevent Chrome/Edge/Firefox autofill from overriding cyber dark themes with bright white */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ffffff !important;
+    -webkit-box-shadow: 0 0 0 1000px #090911 inset !important;
+    box-shadow: 0 0 0 1000px #090911 inset !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+    caret-color: #00f2fe !important;
+}
+
 .dashboard-main-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
