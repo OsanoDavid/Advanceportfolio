@@ -376,8 +376,8 @@
     {% if messages %}
     <div class="dashboard-messages-area" style="margin-bottom: 2rem;">
         {% for message in messages %}
-            <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="5500">
-                <span class="cyber-alert-tag">[ REGISTRY NOTICE ]</span>
+            <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="6500">
+                <span class="cyber-alert-tag">{% if 'error' in message.tags %}[ REGISTRATION FAILED ]{% elif 'success' in message.tags %}[ PROFILE CONFIRMED ]{% else %}[ REGISTRY NOTICE ]{% endif %}</span>
                 <span class="cyber-alert-content">{{ message }}</span>
                 <button type="button" class="cyber-alert-close" aria-label="Dismiss notification">&times;</button>
                 <div class="cyber-alert-progress"><div class="cyber-alert-progress-fill"></div></div>
@@ -731,7 +731,7 @@
 
                 <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
                     <button type="button" class="control-btn btn-prev" onclick="navigateToStep(2)">&larr; Modify Parameters</button>
-                    <button type="submit" class="control-btn btn-next" style="background: linear-gradient(90deg, #ff007f, #9d4edd); box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);">
+                    <button type="submit" class="control-btn btn-next" id="btnSubmitRegistry" data-loading-text="Deploying Registry Footprint..." style="background: linear-gradient(90deg, #ff007f, #9d4edd); box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);">
                         Deploy Registry Footprint
                     </button>
                 </div>
@@ -883,7 +883,11 @@
             }
 
             if (!isValid) {
-                alert("CRITICAL ERROR: Please fill all required personal parameters in Stage 01.");
+                if (window.showCyberAlert) {
+                    window.showCyberAlert("REGISTRATION FAILED: Please fill all required personal parameters in Stage 01.", "error");
+                } else {
+                    alert("CRITICAL ERROR: Please fill all required personal parameters in Stage 01.");
+                }
                 return;
             }
 
@@ -924,6 +928,13 @@
         if (pass !== confirm) {
             errorMsg.style.display = "block";
             document.getElementById("id_password_confirm").style.borderColor = "#ff0055";
+            if (window.showCyberAlert) {
+                window.showCyberAlert("REGISTRATION FAILED: Security keyphrases do not match. Please verify your passwords.", "error");
+            }
+            const submitBtn = document.getElementById('btnSubmitRegistry');
+            if (submitBtn && window.resetButtonProcessing) {
+                window.resetButtonProcessing(submitBtn);
+            }
             return false;
         } else {
             errorMsg.style.display = "none";
@@ -936,7 +947,11 @@
         const scopeText = document.getElementById('id_scope');
         if (!scopeText.value.trim()) {
             scopeText.style.borderColor = "#ff0055";
-            alert("Please specify your scope requirements or core experiences.");
+            if (window.showCyberAlert) {
+                window.showCyberAlert("REGISTRATION FAILED: Please specify your scope requirements or core experiences.", "error");
+            } else {
+                alert("Please specify your scope requirements or core experiences.");
+            }
             return;
         }
         scopeText.style.borderColor = "rgba(148,163,184,0.25)";

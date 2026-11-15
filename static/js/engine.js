@@ -198,12 +198,18 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
-        contactForm.addEventListener('submit', () => {
+        contactForm.addEventListener('submit', (e) => {
             const status = document.getElementById('contact-form-status');
             const submitButton = contactForm.querySelector('button[type="submit"]');
             if (contactForm.dataset.authenticated !== 'true') {
                 if (status) status.textContent = 'Signing in is required. Redirecting to sign in…';
+                if (window.showCyberAlert) {
+                    window.showCyberAlert('AUTHENTICATION REQUIRED: Sign in with a registered account before sending an email.', 'error', contactForm);
+                }
                 return;
+            }
+            if (submitButton && window.setButtonProcessing) {
+                window.setButtonProcessing(submitButton, 'Transmitting Signal...');
             }
             const name = contactForm.elements.name.value.trim();
             const email = contactForm.elements.email.value.trim();
@@ -213,7 +219,6 @@ window.addEventListener('DOMContentLoaded', () => {
             const mailto = `mailto:osanodavid09@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.open(mailto, '_blank');
             if (status) status.textContent = 'Email draft opened. Review it and press Send in your email app.';
-            if (submitButton) submitButton.disabled = true;
         });
     }
 
@@ -392,9 +397,11 @@ window.addEventListener('DOMContentLoaded', () => {
     // Cyber Alert Auto-Dismiss Controller
     // Alerts stay for reading time, pause on hover, and gracefully fade out
     // -------------------------------------------------------------
-    const autoDismissAlerts = document.querySelectorAll('.auto-dismiss-alert');
-    autoDismissAlerts.forEach((alertBox) => {
-        const dismissDelay = parseInt(alertBox.getAttribute('data-dismiss-delay') || '5500', 10);
+    const initAutoDismissAlert = (alertBox) => {
+        if (!alertBox || alertBox.dataset.alertInitialized === 'true') return;
+        alertBox.dataset.alertInitialized = 'true';
+
+        const dismissDelay = parseInt(alertBox.getAttribute('data-dismiss-delay') || '6000', 10);
         let dismissTimer = null;
         let remainingTime = dismissDelay;
         let startTime = Date.now();
@@ -430,5 +437,128 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         startTimer();
+    };
+
+    document.querySelectorAll('.auto-dismiss-alert').forEach(initAutoDismissAlert);
+
+    // -------------------------------------------------------------
+    // Global Cyber Dynamic Alert Dispatcher
+    // -------------------------------------------------------------
+    window.showCyberAlert = (message, type = 'error', targetContainer = null) => {
+        let container = targetContainer;
+        if (!container) {
+            container = document.querySelector('.dashboard-messages-area') || 
+                        document.getElementById('message-container') ||
+                        document.querySelector('form');
+        }
+        if (!container) return;
+
+        const alertBox = document.createElement('div');
+        alertBox.className = `cyber-alert-box auto-dismiss-alert ${type}`;
+        alertBox.setAttribute('data-dismiss-delay', '7500');
+
+        let tagText = '[ TRANSMISSION ]';
+        if (type === 'error') {
+            tagText = '[ FAILED / SYSTEM ERROR ]';
+        } else if (type === 'success') {
+            tagText = '[ SUCCESS / CONFIRMED ]';
+        } else if (type === 'warning') {
+            tagText = '[ WARNING / CAUTION ]';
+        }
+
+        alertBox.innerHTML = `
+            <span class="cyber-alert-tag">${tagText}</span>
+            <span class="cyber-alert-content">${message}</span>
+            <button type="button" class="cyber-alert-close" aria-label="Dismiss">&times;</button>
+            <div class="cyber-alert-progress"><div class="cyber-alert-progress-fill"></div></div>
+        `;
+
+        if (container.tagName === 'FORM') {
+            container.parentNode.insertBefore(alertBox, container);
+        } else {
+            container.prepend(alertBox);
+        }
+
+        initAutoDismissAlert(alertBox);
+        try {
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (_) {}
+    };
+
+    // -------------------------------------------------------------
+    // Cybernetic Button Loading Spinner System
+    // Puts an animated circular spinner in buttons during processing
+    // -------------------------------------------------------------
+    window.setButtonProcessing = (button, customText = null) => {
+        if (!button || button.classList.contains('btn-is-processing')) return false;
+
+        button.setAttribute('data-original-html', button.innerHTML);
+        const loadingText = customText || button.getAttribute('data-loading-text') || 'Processing Request...';
+        
+        button.classList.add('btn-is-processing');
+        button.setAttribute('aria-busy', 'true');
+        button.disabled = true;
+
+        button.innerHTML = `<span class="cyber-btn-spinner" aria-hidden="true"></span><span>${loadingText}</span>`;
+
+        // Safety reset after 15 seconds if navigation did not occur
+        setTimeout(() => {
+            window.resetButtonProcessing(button);
+        }, 15000);
+        return true;
+    };
+
+    window.resetButtonProcessing = (button) => {
+        if (!button || !button.classList.contains('btn-is-processing')) return;
+        const originalHtml = button.getAttribute('data-original-html');
+        if (originalHtml) {
+            button.innerHTML = originalHtml;
+        }
+        button.classList.remove('btn-is-processing');
+        button.removeAttribute('aria-busy');
+        button.disabled = false;
+    };
+
+    // Attach automatic loading spinner to all form submissions
+    document.querySelectorAll('form').forEach((form) => {
+        if (form.getAttribute('data-no-spinner') === 'true') return;
+
+        form.addEventListener('submit', function (e) {
+            // Respect native validation failure
+            if (typeof form.checkValidity === 'function' && !form.checkValidity()) {
+                return;
+            }
+
+            const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+            if (submitBtn) {
+                // If button already processing, prevent double-submission
+                if (submitBtn.classList.contains('btn-is-processing')) {
+                    e.preventDefault();
+                    return;
+                }
+
+                let text = submitBtn.getAttribute('data-loading-text');
+                if (!text) {
+                    if (form.id === 'registryWizardForm') {
+                        text = 'Deploying Registry Footprint...';
+                    } else if (document.getElementById('rootEye') || form.closest('.btn-root')) {
+                        text = 'Authenticating Root Clearance...';
+                    } else if (document.getElementById('id_username') && document.getElementById('id_password')) {
+                        text = 'Authenticating Security Node...';
+                    } else if (form.querySelector('input[name="action"][value="update_profile"]')) {
+                        text = 'Updating Profile Telemetry...';
+                    } else if (form.querySelector('input[name="action"][value="change_password"]')) {
+                        text = 'Rotating Security Keyphrase...';
+                    } else if (form.querySelector('input[name="action"][value="send_inquiry"]')) {
+                        text = 'Transmitting Proposal...';
+                    } else if (form.querySelector('input[name="action"][value="add_project"]')) {
+                        text = 'Deploying Project to Vault...';
+                    } else {
+                        text = 'Processing Details...';
+                    }
+                }
+                window.setButtonProcessing(submitBtn, text);
+            }
+        });
     });
 });

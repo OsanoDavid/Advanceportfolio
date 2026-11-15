@@ -1058,15 +1058,15 @@
                 <input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" pattern="[^\s@]+@gmail\.com" title="Enter a valid @gmail.com address." required>
                 <label for="contact-message">Message</label>
                 <textarea id="contact-message" name="message" rows="4" maxlength="5000" required></textarea>
-                <button class="interactive-btn" type="submit">Send Email</button>
+                <button class="interactive-btn" type="submit" data-loading-text="Transmitting Signal...">Send Email</button>
                 <p id="contact-form-status" role="status" aria-live="polite"></p>
             </form>
         </section>
         {% if messages %}
         <div role="status" aria-live="polite" class="dashboard-messages-area" style="max-width: 600px; margin: 1.5rem auto 2rem;">
             {% for message in messages %}
-            <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="5500">
-                <span class="cyber-alert-tag">[ TRANSMISSION ]</span>
+            <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="6500">
+                <span class="cyber-alert-tag">{% if 'error' in message.tags %}[ FAILED / ERROR ]{% elif 'success' in message.tags %}[ TRANSMISSION CONFIRMED ]{% else %}[ TRANSMISSION ]{% endif %}</span>
                 <span class="cyber-alert-content">{{ message }}</span>
                 <button type="button" class="cyber-alert-close" aria-label="Dismiss notification">&times;</button>
                 <div class="cyber-alert-progress"><div class="cyber-alert-progress-fill"></div></div>

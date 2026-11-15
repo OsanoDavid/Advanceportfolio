@@ -123,11 +123,11 @@
     {% if messages %}
     <div class="dashboard-messages-area" style="margin-bottom: 1.5rem;">
         {% for message in messages %}
-        <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="6000">
-            <span class="cyber-alert-tag">[ ROOT TERMINAL ]</span>
+        <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="6500">
+            <span class="cyber-alert-tag">{% if 'error' in message.tags %}[ FAILED / ROOT CLEARANCE DENIED ]{% elif 'success' in message.tags %}[ ROOT ACCESS GRANTED ]{% else %}[ ROOT TERMINAL ]{% endif %}</span>
             <span class="cyber-alert-content">{{ message }}</span>
             <button type="button" class="cyber-alert-close" aria-label="Dismiss">&times;</button>
-            <div class="cyber-alert-progress"><div class="cyber-alert-progress-fill" style="background:#39ff14; box-shadow: 0 0 8px #39ff14;"></div></div>
+            <div class="cyber-alert-progress"><div class="cyber-alert-progress-fill"></div></div>
         </div>
         {% endfor %}
     </div>
@@ -151,7 +151,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn-root">⚡ UNLOCK ROOT TERMINAL &rarr;</button>
+            <button type="submit" class="btn-root" data-loading-text="Authenticating Root Clearance...">⚡ UNLOCK ROOT TERMINAL &rarr;</button>
         </form>
 
         <div class="root-warning">

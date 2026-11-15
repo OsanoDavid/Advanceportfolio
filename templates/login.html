@@ -130,8 +130,8 @@
     {% if messages %}
         <div id="message-container" class="dashboard-messages-area" style="margin-bottom: 2rem;">
             {% for message in messages %}
-                <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="5500">
-                    <span class="cyber-alert-tag">[ SYSTEM STATUS ]</span>
+                <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="6500">
+                    <span class="cyber-alert-tag">{% if 'error' in message.tags %}[ FAILED / ACCESS DENIED ]{% elif 'success' in message.tags %}[ CONNECTION ESTABLISHED ]{% else %}[ SYSTEM STATUS ]{% endif %}</span>
                     <span class="cyber-alert-content">{{ message }}</span>
                     <button type="button" class="cyber-alert-close" aria-label="Dismiss notification">&times;</button>
                     <div class="cyber-alert-progress"><div class="cyber-alert-progress-fill"></div></div>
@@ -171,8 +171,8 @@
                 </div>
             </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="btn-submit">
+            <!-- Submit Button with Cyber Loading Spinner integration -->
+            <button type="submit" class="btn-submit" data-loading-text="Authenticating Security Node...">
                 Initialize Connection &rarr;
             </button>
         </form>

@@ -22,8 +22,8 @@
     {% if messages %}
     <div class="dashboard-messages-area" role="alert">
         {% for message in messages %}
-        <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="5500">
-            <span class="cyber-alert-tag">[ SYSTEM NOTIFICATION ]</span>
+        <div class="cyber-alert-box auto-dismiss-alert {% if message.tags %}{{ message.tags }}{% endif %}" data-dismiss-delay="6500">
+            <span class="cyber-alert-tag">{% if 'error' in message.tags %}[ FAILED / ERROR ]{% elif 'success' in message.tags %}[ SYSTEM CONFIRMED ]{% else %}[ SYSTEM NOTIFICATION ]{% endif %}</span>
             <span class="cyber-alert-content">{{ message }}</span>
             <button type="button" class="cyber-alert-close" aria-label="Dismiss notification">&times;</button>
             <div class="cyber-alert-progress"><div class="cyber-alert-progress-fill"></div></div>
@@ -108,7 +108,7 @@
                 </div>
 
                 <div style="display: flex; gap: 0.8rem; margin-top: 1.2rem;">
-                    <button type="submit" class="btn-primary-glow" style="background: #39ff14; color: #000; flex: 1;">
+                    <button type="submit" class="btn-primary-glow" data-loading-text="Committing Deployment to Vault..." style="background: #39ff14; color: #000; flex: 1;">
                         COMMIT DEPLOYMENT TO VAULT &rarr;
                     </button>
                     <button type="button" class="action-btn-secondary" onclick="toggleNewProjectPanel()">Cancel</button>
@@ -153,7 +153,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="action" value="delete_project">
                             <input type="hidden" name="project_id" value="{{ proj.id }}">
-                            <button type="submit" style="background: transparent; border: 1px solid rgba(255, 0, 85, 0.4); color: #ff0055; padding: 0.35rem 0.75rem; min-height: 34px; border-radius: 4px; font-family: monospace; font-size: 0.72rem; cursor: pointer;">
+                            <button type="submit" data-loading-text="Decommissioning..." style="background: transparent; border: 1px solid rgba(255, 0, 85, 0.4); color: #ff0055; padding: 0.35rem 0.75rem; min-height: 34px; border-radius: 4px; font-family: monospace; font-size: 0.72rem; cursor: pointer;">
                                 🗑 Decommission
                             </button>
                         </form>
@@ -204,7 +204,7 @@
                             </div>
 
                             <div style="display: flex; gap: 0.6rem;">
-                                <button type="submit" class="btn-primary-glow" style="min-height: 40px; padding: 0.5rem 1rem; font-size: 0.8rem;">Save Updates</button>
+                                <button type="submit" class="btn-primary-glow" data-loading-text="Saving Project Updates..." style="min-height: 40px; padding: 0.5rem 1rem; font-size: 0.8rem;">Save Updates</button>
                                 <button type="button" class="action-btn-secondary" style="min-height: 40px; padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="toggleEditProject('{{ proj.id }}')">Cancel</button>
                             </div>
                         </form>
@@ -378,7 +378,7 @@
                         </div>
 
                         <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
-                            <button type="submit" class="btn-primary-glow" style="flex: 1;">Save Profile Changes</button>
+                            <button type="submit" class="btn-primary-glow" data-loading-text="Updating Profile Telemetry &amp; Photo..." style="flex: 1;">Save Profile Changes</button>
                             <button type="button" class="action-btn-secondary" onclick="toggleEditPanel()">Cancel</button>
                         </div>
                     </form>
@@ -444,7 +444,7 @@
                         <textarea name="message" rows="4" class="dashboard-input" placeholder="Type your project proposal, role details, or technical inquiry here..." required></textarea>
                     </div>
 
-                    <button type="submit" class="btn-primary-glow" style="width: 100%;">
+                    <button type="submit" class="btn-primary-glow" data-loading-text="Transmitting Direct Proposal..." style="width: 100%;">
                         TRANSMIT DIRECT PROPOSAL &rarr;
                     </button>
                 </form>
@@ -531,7 +531,7 @@
                         </div>
 
                         <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
-                            <button type="submit" class="btn-primary-glow" style="flex: 1; background: #ff007f; border-color: #ff007f;">Update Password</button>
+                            <button type="submit" class="btn-primary-glow" data-loading-text="Rotating Security Keyphrase..." style="flex: 1; background: #ff007f; border-color: #ff007f;">Update Password</button>
                             <button type="button" class="action-btn-secondary" onclick="togglePasswordPanel()">Cancel</button>
                         </div>
                     </form>
